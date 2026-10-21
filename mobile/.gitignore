@@ -1,0 +1,9 @@
+node_modules
+# Regenerated from frontend/dist by `cap sync`.
+ios/App/App/public
+android/app/src/main/assets/public
+android/.gradle
+android/build
+android/app/build
+ios/App/Pods
+ios/DerivedData
