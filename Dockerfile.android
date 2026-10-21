@@ -1,0 +1,57 @@
+# syntax=docker/dockerfile:1
+# Builds the Android app (a Capacitor shell around frontend/) without a local
+# Android toolchain. From entrypoint/: make android-build → artifacts/*.apk
+#
+# Build args:
+#   VITE_API_ORIGIN  the API the app talks to (default: the dev stack as seen
+#                    from the Android emulator)
+#   RELEASE=1        an HTTPS-only release build (assembleRelease; sign it after)
+#   ROULETTE_PUBLIC_HOST  the site's host, e.g. play.example.com: https invite and
+#                    referral links on it open the app (App Links)
+#   VITE_PUBLIC_URL  the site's address, which the app puts in the links it shares
+FROM eclipse-temurin:21-jdk-jammy
+
+ENV ANDROID_HOME=/opt/android-sdk
+ENV PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl unzip ca-certificates gnupg \
+  && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+  && apt-get install -y --no-install-recommends nodejs \
+  && rm -rf /var/lib/apt/lists/* \
+  && mkdir -p "$ANDROID_HOME/cmdline-tools" \
+  && curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/cmdline-tools.zip \
+  && unzip -q /tmp/cmdline-tools.zip -d "$ANDROID_HOME/cmdline-tools" \
+  && mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest" \
+  && rm /tmp/cmdline-tools.zip \
+  && yes | sdkmanager --licenses >/dev/null \
+  && sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0' >/dev/null
+
+WORKDIR /repo
+
+# Dependencies first, so code changes don't reinstall them.
+COPY package.json package-lock.json ./
+COPY frontend/package.json frontend/package.json
+COPY backend/package.json backend/package.json
+COPY mobile/package.json mobile/package.json
+COPY admin/package.json admin/package.json
+COPY packages packages
+RUN npm ci --no-audit --no-fund --ignore-scripts
+
+COPY tsconfig.base.json ./
+COPY frontend frontend
+COPY mobile mobile
+
+ARG VITE_API_ORIGIN=http://10.0.2.2
+ARG RELEASE=0
+ARG ROULETTE_PUBLIC_HOST=
+ARG VITE_PUBLIC_URL=
+ENV VITE_API_ORIGIN=$VITE_API_ORIGIN ROULETTE_RELEASE=$RELEASE ROULETTE_PUBLIC_HOST=$ROULETTE_PUBLIC_HOST VITE_PUBLIC_URL=$VITE_PUBLIC_URL
+# Vite and the Capacitor CLI live in their workspaces' node_modules: run them from there.
+# Gradle's downloads are kept in a BuildKit cache, so rebuilds don't fetch them again.
+# The .android cache keeps one debug signing key across builds, so a new APK installs over the old one.
+RUN --mount=type=cache,target=/root/.gradle --mount=type=cache,target=/root/.android \
+  cd frontend && npx vite build \
+  && cd ../mobile && npx cap sync android \
+  && cd android && ./gradlew --no-daemon --console=plain $([ "$RELEASE" = 1 ] && echo assembleRelease || echo assembleDebug)
+
+CMD ["sh", "-c", "mkdir -p /artifacts && cp mobile/android/app/build/outputs/apk/*/*.apk /artifacts/ && ls -la /artifacts"]

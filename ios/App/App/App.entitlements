@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Universal Links: https://<site>/join/CODE and /r/CODE open the app. Release builds only (it needs a
+	     paid developer team); the host comes from ROULETTE_PUBLIC_HOST. The site must serve
+	     /.well-known/apple-app-site-association (set APPLE_TEAM_ID on the server). -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:$(ROULETTE_PUBLIC_HOST)</string>
+	</array>
+	<!-- Push notifications (needs a paid team, like Universal Links, so Release only). Xcode turns this
+	     into "production" when a build is archived for the App Store or TestFlight. -->
+	<key>aps-environment</key>
+	<string>development</string>
+</dict>
+</plist>

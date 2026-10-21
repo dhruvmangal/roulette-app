@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "467591193457",
+    "project_id": "roulette-2abdd",
+    "storage_bucket": "roulette-2abdd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:467591193457:android:8f4bc2881e8fad1f018cd0",
+        "android_client_info": {
+          "package_name": "com.roulette.game"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyoZuB9NotnIPKSg_Tl0k21FM32KBzoV8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
