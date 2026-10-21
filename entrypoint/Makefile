@@ -2,7 +2,7 @@ COMPOSE = docker compose --env-file .env -f docker-compose.yml
 DEV = $(COMPOSE) -f docker-compose.dev.yml
 PROD = $(COMPOSE) -f docker-compose.prod.yml
 
-.PHONY: dev dev-tools prod down logs migrate migrate-status migrate-undo seed psql redis-cli reset backup restore android-build
+.PHONY: install-docker dev dev-tools prod down logs migrate migrate-status migrate-undo seed psql redis-cli reset backup restore android-build
 
 dev:
 	@test -f .env || cp .env.example .env
@@ -12,12 +12,16 @@ dev-tools:
 	@test -f .env || cp .env.example .env
 	$(DEV) --profile tools up --build
 
-prod:
+# Installs Docker Engine + Compose on Linux; a no-op if present or not on Linux.
+install-docker:
+	sh scripts/install-docker.sh
+
+prod: install-docker
 	@test -f .env || (echo 'Create .env with production secrets first.' && exit 1)
 	$(PROD) up -d --build
 
 down:
-	$(DEV) down
+	$(DEV) down??
 	$(PROD) down
 
 logs:
