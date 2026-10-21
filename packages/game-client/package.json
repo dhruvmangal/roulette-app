@@ -1,0 +1,32 @@
+{
+  "name": "@roulette/game-client",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "lint": "tsc --noEmit",
+    "test": "node --experimental-strip-types --conditions=source --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@roulette/api-client": "1.0.0",
+    "@roulette/contracts": "1.0.0",
+    "@roulette/engine": "1.0.0",
+    "socket.io-client": "4.8.1"
+  },
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ]
+}

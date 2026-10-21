@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@roulette/engine": ["../packages/roulette-engine/src/index.ts"],
+      "@roulette/game-client": ["../packages/game-client/src/index.ts"],
+      "@roulette/contracts": ["../packages/contracts/src/index.ts"],
+      "@roulette/api-client": ["../packages/api-client/src/index.ts"]
+    }
+  },
+  "include": ["src"]
+}

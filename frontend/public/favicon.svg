@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbe3a1"/>
+      <stop offset="0.45" stop-color="#e8c36a"/>
+      <stop offset="1" stop-color="#a97b2c"/>
+    </linearGradient>
+    <radialGradient id="bowl" cx="0.4" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#6b3a1f"/>
+      <stop offset="1" stop-color="#24120a"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="url(#rim)"/>
+  <circle cx="32" cy="32" r="27.5" fill="#1a0e08"/>
+  <g transform="rotate(-90 32 32)" fill="none" stroke-width="8">
+    <circle cx="32" cy="32" r="22" stroke="#15151c"/>
+    <!-- 16 pockets: dash lengths are 1/16 of the ring's circumference (2π·22). -->
+    <circle cx="32" cy="32" r="22" stroke="#c8283c" stroke-dasharray="8.639 8.639"/>
+    <circle cx="32" cy="32" r="22" stroke="#0f8a5a" stroke-dasharray="8.639 129.591" stroke-dashoffset="-8.639"/>
+  </g>
+  <circle cx="32" cy="32" r="26" fill="none" stroke="#e8c36a" stroke-width="0.9"/>
+  <circle cx="32" cy="32" r="18" fill="url(#bowl)" stroke="#e8c36a" stroke-width="0.9"/>
+  <g stroke="url(#rim)" stroke-width="2.4" stroke-linecap="round">
+    <line x1="24.5" y1="24.5" x2="39.5" y2="39.5"/>
+    <line x1="39.5" y1="24.5" x2="24.5" y2="39.5"/>
+  </g>
+  <g fill="#fbe3a1">
+    <circle cx="24.5" cy="24.5" r="1.9"/>
+    <circle cx="39.5" cy="24.5" r="1.9"/>
+    <circle cx="24.5" cy="39.5" r="1.9"/>
+    <circle cx="39.5" cy="39.5" r="1.9"/>
+  </g>
+  <circle cx="32" cy="32" r="4.2" fill="url(#rim)" stroke="#5a3d12" stroke-width="0.6"/>
+  <circle cx="44.6" cy="14" r="3" fill="#fff8e7" stroke="#0006" stroke-width="0.5"/>
+</svg>

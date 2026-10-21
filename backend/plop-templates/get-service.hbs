@@ -1,0 +1,36 @@
+import ajv from '~/libs/ajv'
+import ServiceBase from '~/services/serviceBase'
+import { pageValidation } from '~/utils/common.utils'
+import { SUCCESS_MSG } from '~/utils/constants/success'
+
+const schema = {
+  type: 'object',
+  properties: {
+    limit: { type: ['string', 'number'] },
+    pageNo: { type: ['string', 'number'] }
+  },
+  required: []
+}
+
+const constraints = ajv.compile(schema)
+
+export class Get{{pascalCase name}}Service extends ServiceBase {
+  get constraints () {
+    return constraints
+  }
+
+  async run () {
+    const { limit, pageNo } = this.args
+    const { dbModels: { {{pascalCase name}} } } = this.context
+
+    const { pageNo: page, size } = pageValidation(pageNo, limit)
+
+    const {{camelCase name}}s = await {{pascalCase name}}.findAndCountAll({
+      order: [['{{camelCase name}}Id', 'ASC']],
+      limit: size,
+      offset: (page - 1) * size
+    })
+
+    return { {{camelCase name}}s, message: SUCCESS_MSG.GET_SUCCESS }
+  }
+}

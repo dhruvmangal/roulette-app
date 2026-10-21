@@ -1,0 +1,30 @@
+{
+  "name": "roulette",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "npm@11.17.0",
+  "workspaces": [
+    "admin",
+    "backend",
+    "frontend",
+    "mobile",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "make -C entrypoint dev",
+    "dev:local": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "prettier": "3.5.3",
+    "tsup": "8.4.0",
+    "turbo": "2.5.6",
+    "typescript": "5.8.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

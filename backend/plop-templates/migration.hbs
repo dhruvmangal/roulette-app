@@ -1,0 +1,33 @@
+'use strict'
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up (queryInterface, Sequelize) {
+    await queryInterface.createTable('{{camelCase name}}s', {
+      {{snakeCase name}}_id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true
+      },
+{{#each parsedFields}}
+      {{snakeCase name}}: {
+        type: Sequelize.{{constantCase type}},
+        allowNull: true
+      },
+{{/each}}
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false
+      }
+    })
+  },
+
+  async down (queryInterface) {
+    await queryInterface.dropTable('{{camelCase name}}s')
+  }
+}

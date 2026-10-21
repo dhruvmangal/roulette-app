@@ -1,0 +1,24 @@
+app:
+  name: backend-boilerplate
+  configMap: ["production-backend-boilerplate-map"]
+  secretRef: ["production-backend-boilerplate-secret", "production-db-secret"]
+
+image:
+  repository: <account-id>.dkr.ecr.<region>.amazonaws.com/backend-boilerplate
+  pullPolicy: Always
+  tag: production
+
+probe:
+  path: ["/health-check"]
+
+service:
+  type: NodePort
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+
+services:
+  ingress:
+    enabled: true

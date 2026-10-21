@@ -1,0 +1,22 @@
+node_modules/
+dist/
+build/
+.turbo/
+.expo/
+coverage/
+.env
+.env.*
+!.env.example
+entrypoint/.env
+entrypoint/.env.*
+!entrypoint/.env.example
+*.log
+.DS_Store
+backend/.env
+backend/package-lock.json
+frontend/.env.local
+mobile/android/
+mobile/ios/
+mobile/.expo/
+# Raw 3D sources (large); optimised copies live in frontend/public
+frontend/assets-src/

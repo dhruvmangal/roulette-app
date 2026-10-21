@@ -1,0 +1,21 @@
+export const SUCCESS_MSG = {
+  CREATE_SUCCESS: 'Record created successfully',
+  GET_SUCCESS: 'Record fetched successfully',
+  DELETE_SUCCESS: 'Record deleted successfully',
+  UPDATE_SUCCESS: 'Record updated successfully',
+  SIGN_UP_SUCCESS: 'Account created',
+  LOGIN_SUCCESS: 'Logged in',
+  TOKEN_REFRESHED: 'Session refreshed',
+  LOGGED_OUT: 'Logged out',
+  PROVIDER_LINKED: 'Account linked',
+  BONUS_CLAIMED: 'Bonus claimed',
+  REFERRAL_CLAIMED: 'Referral code applied',
+  ROOM_CREATED: 'Room created',
+  ROOM_JOINED: 'Joined the table',
+  ROOM_LEFT: 'Left the table',
+  ROOM_STARTED: 'The game has started',
+  BETS_PLACED: 'Bets placed',
+  BETS_REMOVED: 'Bets taken back',
+  WALLET_ADJUSTED: 'Wallet adjusted',
+  PLAYER_STATUS_UPDATED: 'Player status updated'
+}

@@ -1,0 +1,11 @@
+Dealer models shipped in this folder
+
+1. medic.glb (default "Anime" dealer)
+   "Blonde Anime Medic Girl - Image to STL SupaVoxel" by Farah Aziz (@farahaziz14)
+   https://sketchfab.com/3d-models/blonde-anime-medic-girl-image-to-stl-supavoxel-2027a569e3084094b766aaf3c9b56582
+   Licensed under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+   Changes: mesh simplified to ~10% of vertices, textures resized to 1024px WebP,
+   geometry compressed (npm run build:medic -w @roulette/frontend).
+
+2. dealer.glb + *.jpg/*.png ("Classic" dealer)
+   Business_Female_01 and animations from Microsoft Rocketbox, MIT licence: see LICENSE.txt.

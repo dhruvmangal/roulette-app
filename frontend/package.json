@@ -1,0 +1,47 @@
+{
+  "name": "@roulette/frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "lint": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview --host 0.0.0.0",
+    "build:medic": "gltf-transform optimize assets-src/medic.glb public/dealer/medic.glb --join true --compress meshopt --simplify-ratio 0.1 --simplify-error 0.002 --texture-compress webp --texture-size 1024"
+  },
+  "dependencies": {
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/device": "8.0.3",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/haptics": "8.0.2",
+    "@capacitor/network": "8.0.1",
+    "@capacitor/push-notifications": "8.1.3",
+    "@capacitor/share": "8.0.3",
+    "@capacitor/splash-screen": "8.0.2",
+    "@capacitor/status-bar": "8.0.4",
+    "@discord/embedded-app-sdk": "2.5.0",
+    "@roulette/api-client": "1.0.0",
+    "@roulette/contracts": "1.0.0",
+    "@roulette/engine": "1.0.0",
+    "@roulette/game-client": "1.0.0",
+    "@vitejs/plugin-react": "4.4.1",
+    "phaser": "3.88.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "simple-icons": "16.35.0",
+    "socket.io-client": "4.8.1",
+    "three": "0.170.0",
+    "vite": "6.3.5"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "4.1.1",
+    "@types/react": "19.1.2",
+    "@types/react-dom": "19.1.2",
+    "@types/three": "0.170.0",
+    "typescript": "5.8.3"
+  }
+}

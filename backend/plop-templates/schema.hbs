@@ -1,0 +1,14 @@
+import ajv from '~/libs/ajv'
+
+/** @type {import("ajv").Schema} */
+const {{camelCase name}} = {
+  type: 'object',
+  properties: {
+{{#each parsedFields}}
+    {{camelCase name}}: { type: '{{jsonType type}}' }{{#unless @last}},{{/unless}}
+{{/each}}
+  },
+  required: [{{#each parsedFields}}'{{camelCase name}}'{{#unless @last}}, {{/unless}}{{/each}}]
+}
+
+ajv.addSchema({{camelCase name}}, '/{{camelCase name}}.json')

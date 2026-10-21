@@ -1,0 +1,211 @@
+name: ${COMPOSE_PROJECT_NAME:-roulette}
+
+services:
+  nginx:
+    image: nginx:1.27.5-alpine
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+      admin:
+        condition: service_healthy
+    networks: [app]
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+      target: production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+    networks: [app]
+
+  # The admin app, served by nginx at /admin/.
+  admin:
+    build:
+      context: ..
+      dockerfile: admin/Dockerfile
+      target: production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/admin/"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+    networks: [app]
+
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+      target: production
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 8080
+      APP_NAME: RouletteBackend
+      ORIGIN: ${ORIGIN:-*}
+      # nginx proxies every request to the backend.
+      TRUST_PROXY: 1
+      DB_READ_HOST: postgres
+      DB_WRITE_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${POSTGRES_USER:-roulette}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-roulette_dev_only}
+      DB_NAME: ${POSTGRES_DB:-roulette}
+      REDIS_DB_HOST: redis
+      REDIS_DB_PORT: 6379
+      REDIS_DB_PASSWORD: ${REDIS_PASSWORD:-roulette_redis_dev_only}
+      JWT_LOGIN_SECRET: ${JWT_LOGIN_SECRET:?Set JWT_LOGIN_SECRET in entrypoint/.env}
+      JWT_LOGIN_TOKEN_EXPIRY: ${JWT_LOGIN_TOKEN_EXPIRY:-15m}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?Set JWT_REFRESH_SECRET in entrypoint/.env}
+      JWT_REFRESH_TOKEN_EXPIRY: ${JWT_REFRESH_TOKEN_EXPIRY:-30d}
+      # Sign in with Google / Apple: the client IDs whose ID tokens are accepted.
+      GOOGLE_CLIENT_IDS: ${GOOGLE_CLIENT_IDS:-}
+      # Play as a Discord Activity: the Discord app's ID and OAuth2 client secret.
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-}
+      APPLE_TEAM_ID: ${APPLE_TEAM_ID:-}
+      ANDROID_CERT_SHA256: ${ANDROID_CERT_SHA256:-}
+      FCM_SERVICE_ACCOUNT_JSON: ${FCM_SERVICE_ACCOUNT_JSON:-}
+      APNS_KEY: ${APNS_KEY:-}
+      APNS_KEY_ID: ${APNS_KEY_ID:-}
+      APNS_TEAM_ID: ${APNS_TEAM_ID:-}
+      APNS_BUNDLE_ID: ${APNS_BUNDLE_ID:-com.roulette.game}
+      APNS_PRODUCTION: ${APNS_PRODUCTION:-false}
+      APPLE_CLIENT_IDS: ${APPLE_CLIENT_IDS:-}
+      # Admin app: its own token secret, and the first admin, created at startup if missing.
+      JWT_ADMIN_SECRET: ${JWT_ADMIN_SECRET:-}
+      JWT_ADMIN_TOKEN_EXPIRY: ${JWT_ADMIN_TOKEN_EXPIRY:-8h}
+      ADMIN_BOOTSTRAP_EMAIL: ${ADMIN_BOOTSTRAP_EMAIL:-}
+      ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}
+      # Seconds a seated player can be away from a table before the seat is given up.
+      GAME_AWAY_UNSEAT_SECONDS: ${GAME_AWAY_UNSEAT_SECONDS:-600}
+      SOCKET_ENCRYPTION_KEY: ${SOCKET_ENCRYPTION_KEY:?Set SOCKET_ENCRYPTION_KEY in entrypoint/.env}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 4s
+      retries: 10
+      start_period: 20s
+    networks: [app]
+
+  migrate:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+      target: migrate
+    restart: "no"
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DB_READ_HOST: postgres
+      DB_WRITE_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${POSTGRES_USER:-roulette}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-roulette_dev_only}
+      DB_NAME: ${POSTGRES_DB:-roulette}
+      REDIS_DB_HOST: redis
+      REDIS_DB_PORT: 6379
+      REDIS_DB_PASSWORD: ${REDIS_PASSWORD:-roulette_redis_dev_only}
+      JWT_LOGIN_SECRET: ${JWT_LOGIN_SECRET:?Set JWT_LOGIN_SECRET in entrypoint/.env}
+      JWT_LOGIN_TOKEN_EXPIRY: ${JWT_LOGIN_TOKEN_EXPIRY:-15m}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?Set JWT_REFRESH_SECRET in entrypoint/.env}
+      JWT_REFRESH_TOKEN_EXPIRY: ${JWT_REFRESH_TOKEN_EXPIRY:-30d}
+      SOCKET_ENCRYPTION_KEY: ${SOCKET_ENCRYPTION_KEY:?Set SOCKET_ENCRYPTION_KEY in entrypoint/.env}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [app]
+
+  postgres:
+    image: postgres:16.8-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-roulette}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-roulette_dev_only}
+      POSTGRES_DB: ${POSTGRES_DB:-roulette}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks: [app]
+
+  redis:
+    image: redis:7.4.2-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-roulette_redis_dev_only}
+    command: ["sh", "-c", "exec redis-server --appendonly yes --requirepass \"$${REDIS_PASSWORD}\""]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks: [app]
+
+  redisinsight:
+    image: redis/redisinsight:2.68.0
+    profiles: [tools]
+    restart: unless-stopped
+    environment:
+      RI_REDIS_HOST: redis
+      RI_REDIS_PORT: 6379
+      RI_REDIS_PASSWORD: ${REDIS_PASSWORD:-roulette_redis_dev_only}
+    ports:
+      - "127.0.0.1:${REDISINSIGHT_PORT:-5540}:5540"
+    volumes:
+      - redisinsight:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks: [app]
+
+  pgadmin:
+    image: dpage/pgadmin4:9.1.0
+    profiles: [tools]
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin_dev_only}
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+    ports:
+      - "127.0.0.1:${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+      - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [app]
+
+volumes:
+  pgdata:
+  redisdata:
+  pgadmin:
+  redisinsight:
+
+networks:
+  app:
+    name: roulette-internal

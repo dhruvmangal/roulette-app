@@ -1,0 +1,66 @@
+# Local dev environment: Postgres + Redis + the app itself, hot-reloading
+# via nodemon with your working tree bind-mounted in.
+#
+#   docker compose up -d postgres redis   # just the datastores, run the app with `npm run start:dev` on your host
+#   docker compose up                     # everything, including the app, in containers
+#
+# Either way, first `cp .env.sample .env` — this file expects DB/Redis host
+# values of `postgres`/`redis` when the app itself runs in Docker (override
+# them in your shell, or a docker-compose.override.yml, if you run the app
+# on your host against these containers instead).
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-backend_boilerplate}
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME:-postgres}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '${REDIS_DB_PORT:-6379}:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      args:
+        NODE_ENV: development
+    command: npm run start:dev
+    ports:
+      - '${PORT:-8080}:8080'
+    env_file:
+      - .env
+    environment:
+      DB_READ_HOST: postgres
+      DB_WRITE_HOST: postgres
+      REDIS_DB_HOST: redis
+    volumes:
+      - ./:/home/node/app
+      - /home/node/app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

@@ -1,0 +1,10 @@
+{
+  "name": "@roulette/config",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": { "build": "tsup src/index.ts --format esm,cjs --dts", "lint": "tsc --noEmit", "test": "node --test", "typecheck": "tsc --noEmit" }
+}

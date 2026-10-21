@@ -1,0 +1,56 @@
+services:
+  nginx:
+    ports:
+      - "80:80"
+
+  frontend:
+    build:
+      target: dev
+    command: npm run dev --workspace=@roulette/frontend -- --host 0.0.0.0
+    volumes:
+      - ../frontend/src:/repo/frontend/src
+      - ../frontend/index.html:/repo/frontend/index.html
+      - ../frontend/vite.config.ts:/repo/frontend/vite.config.ts
+      - ../frontend/public:/repo/frontend/public
+      # Vite aliases the workspace packages to their TypeScript source.
+      - ../packages/roulette-engine/src:/repo/packages/roulette-engine/src
+      - ../packages/game-client/src:/repo/packages/game-client/src
+      - ../packages/contracts/src:/repo/packages/contracts/src
+      - ../packages/api-client/src:/repo/packages/api-client/src
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5173/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+
+  admin:
+    build:
+      target: dev
+    command: npm run dev --workspace=@roulette/admin -- --host 0.0.0.0
+    volumes:
+      - ../admin/src:/repo/admin/src
+      - ../admin/index.html:/repo/admin/index.html
+      - ../admin/vite.config.ts:/repo/admin/vite.config.ts
+      - ../admin/public:/repo/admin/public
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5174/admin/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+
+  backend:
+    build:
+      target: development
+    command: npm run start:dev --workspace=@roulette/backend
+    volumes:
+      - ../backend/src:/repo/backend/src
+      - ../backend/index.js:/repo/backend/index.js
+      - ../backend/babel.config.json:/repo/backend/babel.config.json
+      - ../backend/nodemon.json:/repo/backend/nodemon.json
+    environment:
+      NODE_ENV: development
+      DB_READ_HOST: postgres
+      DB_WRITE_HOST: postgres
+
+  migrate:
+    command: ["sh", "-lc", "npm run sequelize --workspace=@roulette/backend -- db:migrate && npm run sequelize --workspace=@roulette/backend -- db:seed:all"]
+    # Read migrations and seeders from the working tree, so new ones run
+    # without rebuilding the image.
+    volumes:
+      - ../backend/src:/repo/backend/src
+    environment:
+      NODE_ENV: development

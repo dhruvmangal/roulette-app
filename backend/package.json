@@ -1,0 +1,113 @@
+{
+  "name": "@roulette/backend",
+  "version": "1.0.0",
+  "description": "Scalable Node.js boilerplate: Express + Socket.io + Sequelize (Postgres) + Redis, with a layered service architecture",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "husky install",
+    "start": "node ./dist/index.js",
+    "babel-node": "babel-node --inspect=0.0.0.0:9229",
+    "lint": "standard",
+    "start:dev": "nodemon --exec npm run babel-node -- ./index.js",
+    "test": "jest",
+    "sequelize": "npm run babel-node -- ./node_modules/.bin/sequelize-cli --config dist/src/configs/database.config.js",
+    "migrate:deploy": "sequelize-cli db:migrate --config dist/src/configs/database.config.js --migrations-path dist/src/db/migrations",
+    "build": "rm -rf dist && babel . -d ./dist --copy-files --no-copy-ignored && rm -rf dist/node_modules",
+    "test:watch": "jest --watch",
+    "lint:ci": "standard",
+    "generate": "plop"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@ip-location-db/dbip-city-mmdb": "2.3.2026060513",
+    "@roulette/engine": "1.0.0",
+    "@socket.io/redis-adapter": "^8.3.0",
+    "@socket.io/redis-emitter": "^5.1.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "ajv-i18n": "^4.2.0",
+    "ajv-keywords": "^5.1.0",
+    "body-parser": "^1.20.3",
+    "convict": "^6.2.4",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.4.1",
+    "flatted": "^3.3.1",
+    "helmet": "^7.1.0",
+    "http-status-codes": "^2.3.0",
+    "i18n": "^0.15.1",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "maxmind": "5.0.7",
+    "morgan": "^1.10.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "pg": "^8.13.1",
+    "pg-hstore": "^2.3.4",
+    "rate-limit-redis": "^4.2.0",
+    "sequelize": "^6.37.5",
+    "sequelize-cli": "^6.6.2",
+    "socket.io": "^4.8.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "ua-parser-js": "1.0.41",
+    "uuid": "^9.0.1",
+    "winston": "^3.15.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.25.9",
+    "@babel/core": "^7.26.0",
+    "@babel/eslint-parser": "^7.25.9",
+    "@babel/node": "^7.25.9",
+    "@babel/preset-env": "^7.26.0",
+    "@roulette/contracts": "1.0.0",
+    "babel-jest": "^29.7.0",
+    "babel-plugin-module-resolver": "^5.0.2",
+    "eslint": "^7.32.0",
+    "husky": "^7.0.4",
+    "jest": "^29.7.0",
+    "lint-staged": "^12.5.0",
+    "nodemon": "^3.1.7",
+    "plop": "^4.0.5",
+    "standard": "^16.0.4",
+    "supertest": "^7.0.0"
+  },
+  "standard": {
+    "parser": "@babel/eslint-parser",
+    "env": {
+      "jest": true,
+      "browser": true,
+      "node": true
+    }
+  },
+  "lint-staged": {
+    "src/**/*.js": [
+      "npm run lint"
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": [
+      "<rootDir>/test/setup.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/"
+    ],
+    "moduleNameMapper": {
+      "^~/(.*)$": "<rootDir>/src/$1"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+services:
+  nginx:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d/prod.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: always
+
+  frontend:
+    restart: always
+
+  admin:
+    restart: always
+
+  backend:
+    restart: always
+    environment:
+      NODE_ENV: production
+
+  migrate:
+    command: ["npm", "run", "sequelize", "--workspace=@roulette/backend", "--", "db:migrate"]
+    environment:
+      NODE_ENV: production
+
+  postgres:
+    restart: always
+
+  redis:
+    restart: always

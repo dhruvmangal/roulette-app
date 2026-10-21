@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": ["ES2022", "DOM"],
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "types": ["node"],
+    "paths": {
+      "@roulette/engine": ["../roulette-engine/src/index.ts"],
+      "@roulette/contracts": ["../contracts/src/index.ts"]
+    }
+  },
+  "include": ["src", "test"]
+}

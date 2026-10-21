@@ -1,0 +1,9 @@
+Fonts bundled in this folder, all under the SIL Open Font License, Version 1.1
+(https://openfontlicense.org):
+
+- Cinzel, Copyright 2020 The Cinzel Project Authors (https://github.com/NDISCOVER/Cinzel)
+- Manrope, Copyright 2018 The Manrope Project Authors (https://github.com/sharanda/manrope)
+- JetBrains Mono, Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)
+
+The license allows the fonts to be bundled and redistributed with software,
+provided they are not sold on their own.

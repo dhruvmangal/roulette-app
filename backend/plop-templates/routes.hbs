@@ -1,0 +1,57 @@
+import express from 'express'
+import requestValidationMiddleware from '~/rest-resources/middlewares/requestValidation.middleware'
+import responseValidationMiddleware from '~/rest-resources/middlewares/responseValidation.middleware'
+import rateLimiter from '~/rest-resources/middlewares/rateLimiter.middleware'
+import {{pascalCase name}}Controller from '~/rest-resources/controllers/{{camelCase name}}.controller'
+
+const {{camelCase name}}Routes = express.Router({ mergeParams: true })
+
+/**
+ * @openapi
+ * /api/v1/{{kebabCase name}}s:
+ *   get:
+ *     summary: List {{camelCase name}} records
+ *     tags: [{{pascalCase name}}]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema: { type: string }
+ *       - in: query
+ *         name: pageNo
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: A page of {{camelCase name}} records
+ *   post:
+ *     summary: Create a {{camelCase name}} record
+ *     tags: [{{pascalCase name}}]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [{{#each parsedFields}}{{camelCase name}}{{#unless @last}}, {{/unless}}{{/each}}]
+ *             properties:
+{{#each parsedFields}}
+ *               {{camelCase name}}: { type: '{{jsonType type}}' }
+{{/each}}
+ *     responses:
+ *       200:
+ *         description: The created {{camelCase name}} record
+ */
+{{camelCase name}}Routes
+  .route('/')
+  .get(
+    requestValidationMiddleware({}),
+    {{pascalCase name}}Controller.get{{pascalCase name}}s,
+    responseValidationMiddleware({})
+  )
+  .post(
+    rateLimiter({ windowMinutes: 1, max: 20 }),
+    requestValidationMiddleware({ bodySchema: { $ref: '/{{camelCase name}}.json' } }),
+    {{pascalCase name}}Controller.create{{pascalCase name}},
+    responseValidationMiddleware({})
+  )
+
+export default {{camelCase name}}Routes

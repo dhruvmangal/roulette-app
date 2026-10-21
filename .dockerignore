@@ -1,0 +1,14 @@
+**/node_modules
+**/dist
+**/build
+**/coverage
+**/.git
+**/.env
+**/.expo
+.turbo
+entrypoint
+# Native build output and caches (rebuilt inside the image).
+mobile/ios
+**/android/.gradle
+**/android/build
+**/android/app/build

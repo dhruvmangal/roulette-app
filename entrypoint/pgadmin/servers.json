@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Roulette development",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "roulette",
+      "Username": "roulette",
+      "SSLMode": "prefer"
+    }
+  }
+}

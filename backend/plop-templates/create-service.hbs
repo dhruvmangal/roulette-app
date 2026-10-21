@@ -1,0 +1,30 @@
+import ajv from '~/libs/ajv'
+import ServiceBase from '~/services/serviceBase'
+import { SUCCESS_MSG } from '~/utils/constants/success'
+
+const schema = {
+  type: 'object',
+  properties: {
+{{#each parsedFields}}
+    {{camelCase name}}: { type: '{{jsonType type}}' }{{#unless @last}},{{/unless}}
+{{/each}}
+  },
+  required: [{{#each parsedFields}}'{{camelCase name}}'{{#unless @last}}, {{/unless}}{{/each}}]
+}
+
+const constraints = ajv.compile(schema)
+
+export class Create{{pascalCase name}}Service extends ServiceBase {
+  get constraints () {
+    return constraints
+  }
+
+  async run () {
+    const { {{#each parsedFields}}{{camelCase name}}{{#unless @last}}, {{/unless}}{{/each}} } = this.args
+    const { dbModels: { {{pascalCase name}} } } = this.context
+
+    const {{camelCase name}} = await {{pascalCase name}}.create({ {{#each parsedFields}}{{camelCase name}}{{#unless @last}}, {{/unless}}{{/each}} })
+
+    return { {{camelCase name}}, message: SUCCESS_MSG.CREATE_SUCCESS }
+  }
+}
