@@ -5,12 +5,17 @@ import responseValidationMiddleware from '~/rest-resources/middlewares/responseV
 import rateLimiter from '~/rest-resources/middlewares/rateLimiter.middleware'
 import { isAuthenticated } from '~/rest-resources/middlewares/isAuthenticated.middleware'
 import AuthController from '~/rest-resources/controllers/auth.controller'
+import config from '~/configs/app.config'
 
 const authRoutes = express.Router({ mergeParams: true })
 
 // Creating accounts is limited hardest: each one is granted signup chips.
 // A first Google or Apple sign-in creates one too.
-const accountCreationLimit = () => rateLimiter({ windowMinutes: 15, max: 10 })
+// Relaxed outside production so repeated sign-in testing doesn't lock you out.
+const accountCreationLimit = () => rateLimiter({
+  windowMinutes: 15,
+  max: config.get('env') === 'production' ? 10 : 1000
+})
 
 /**
  * @openapi

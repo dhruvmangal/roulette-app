@@ -18,6 +18,8 @@ import config from '~/configs/app.config'
  * @example
  * router.post('/otp', rateLimiter({ max: 5 }), OtpController.send)
  */
+let limiterCount = 0
+
 export default function rateLimiter ({
   windowMinutes = config.get('rate_limit_opt_timewindow'),
   max = config.get('rate_limit_opt_max_requests'),
@@ -33,7 +35,9 @@ export default function rateLimiter ({
   }
 
   if (distributed) {
+    // Each limiter needs its own key prefix, or they all share one counter per IP.
     options.store = new RedisStore({
+      prefix: `rl:${limiterCount++}:`,
       sendCommand: (...args) => redisClient.client.call(...args)
     })
   }
