@@ -25,8 +25,10 @@ function dealerCandidates (): Plugin {
   }
 }
 
-export default defineConfig({
-  plugins: [react(), dealerCandidates(), seoPages()],
+export default defineConfig(({ mode }) => ({
+  // CrazyGames serves the game from a folder of their own, so every address must be relative to it.
+  base: mode === 'crazygames' ? './' : '/',
+  plugins: [react(), dealerCandidates(), ...(mode === 'crazygames' ? [] : [seoPages()])],
   // Use the packages' TypeScript source directly so dev and lint need no prebuilt dist.
   resolve: {
     alias: {
@@ -49,4 +51,4 @@ export default defineConfig({
       '/socket.io': { target: process.env.VITE_API_PROXY ?? 'http://localhost', ws: true }
     }
   }
-})
+}))

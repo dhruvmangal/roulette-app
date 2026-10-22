@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { MAX_SEATS, type VariantName } from '@roulette/engine'
 import { useI18n } from './i18n'
+import { onCrazyGames } from './crazygames'
 
 export interface SetupChoice {
   variant: VariantName
@@ -47,7 +48,7 @@ export function TableSetup ({ initial, onStart, onClose }: Props) {
           <option value="ENGLISH">{t('online.european')}</option>
         </select>
 
-        <p className="setup-label">{t('setup.players')}</p>
+        {!onCrazyGames && <p className="setup-label">{t('setup.players')}</p>}
         <ul className="setup-players">
           <li><span className="setup-you">{t('lobby.you')}</span></li>
           {guests.map((name, index) => (
@@ -57,8 +58,8 @@ export function TableSetup ({ initial, onStart, onClose }: Props) {
             </li>
           ))}
         </ul>
-        <button type="button" className="btn-ghost small setup-add" disabled={freeSeats < 1} onClick={() => update({ guests: [...guests, ''] })}>{t('setup.add')}</button>
-        <p className="setup-hint">{t('setup.hint')}</p>
+        {!onCrazyGames && <button type="button" className="btn-ghost small setup-add" disabled={freeSeats < 1} onClick={() => update({ guests: [...guests, ''] })}>{t('setup.add')}</button>}
+        {!onCrazyGames && <p className="setup-hint">{t('setup.hint')}</p>}
 
         <p className="setup-label" id="bots-label">{t('online.bots')}</p>
         <div className="stepper" role="group" aria-labelledby="bots-label">

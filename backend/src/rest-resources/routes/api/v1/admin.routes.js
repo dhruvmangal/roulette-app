@@ -231,6 +231,26 @@ adminRoutes.patch(
 
 /**
  * @openapi
+ * /api/v1/admin/settings/ads:
+ *   get:
+ *     summary: Whether ads between rounds are on for the website and the mobile app
+ *     tags: [Admin]
+ *     security: [{ bearerAuth: [] }]
+ *   patch:
+ *     summary: Turn ads between rounds on or off for the website and/or the mobile app
+ *     tags: [Admin]
+ *     security: [{ bearerAuth: [] }]
+ */
+adminRoutes.get('/settings/ads', requestValidationMiddleware({}), AdminController.getAdsSettings, responseValidationMiddleware({}))
+adminRoutes.patch(
+  '/settings/ads',
+  requestValidationMiddleware({ bodySchema: { $ref: '/adminUpdateAdsSettings.json' } }),
+  AdminController.updateAdsSettings,
+  responseValidationMiddleware({})
+)
+
+/**
+ * @openapi
  * /api/v1/admin/rooms:
  *   get:
  *     summary: Tables, newest first, with seated players and stakes

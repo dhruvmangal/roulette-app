@@ -4,6 +4,7 @@ import { useI18n, type MessageKey } from './i18n'
 import { Wheel3D } from './Wheel3D'
 import { VARIANT_INFO } from './TableScreen'
 import type { OnlineMode } from './OnlineDialog'
+import { onCrazyGames } from './crazygames'
 import { GameIcon } from './arcade/GameIcon'
 import { posterOf } from './arcade/posters'
 import { ARCADE_SCREENS, routeForScreen, type ArcadeScreen } from './routes'
@@ -63,10 +64,14 @@ export function HomeScreen ({ practiceBalance, seatedAt, onRejoin, onGiveUpSeat,
         <div className="hero-copy">
           <p className="eyebrow">Les jeux sont faits</p>
           <h1>{t('home.titleA')}<br /><em>{t('home.titleB')}</em></h1>
-          <p className="lede">{t('home.lede')}</p>
+          <p className="lede">{t(onCrazyGames ? 'home.lede.single' : 'home.lede')}</p>
           <div className="hero-actions">
-            <button type="button" className="btn-gold" onClick={() => onOnline('quick')}>{t('home.playOnline')}</button>
-            <button type="button" className="btn-ghost" onClick={() => onOffline('AMERICAN')}>{t('home.practise')}</button>
+            {onCrazyGames
+              ? <button type="button" className="btn-gold" onClick={() => onOffline('AMERICAN')}>{t('home.practise')}</button>
+              : <>
+                <button type="button" className="btn-gold" onClick={() => onOnline('quick')}>{t('home.playOnline')}</button>
+                <button type="button" className="btn-ghost" onClick={() => onOffline('AMERICAN')}>{t('home.practise')}</button>
+              </>}
           </div>
         </div>
         <div className="hero-wheel">
@@ -74,7 +79,7 @@ export function HomeScreen ({ practiceBalance, seatedAt, onRejoin, onGiveUpSeat,
         </div>
       </section>
 
-      <section className="tables" aria-labelledby="online-heading">
+      {!onCrazyGames && <section className="tables" aria-labelledby="online-heading">
         <div className="section-head">
           <p className="eyebrow" id="online-heading">{t('home.playOnline')}</p>
           <span className="section-links">
@@ -95,7 +100,7 @@ export function HomeScreen ({ practiceBalance, seatedAt, onRejoin, onGiveUpSeat,
             </button>
           ))}
         </div>
-      </section>
+      </section>}
 
       <section className="tables" aria-labelledby="games-heading">
         <div className="section-head">

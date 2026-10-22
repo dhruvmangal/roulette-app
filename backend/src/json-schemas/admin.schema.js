@@ -48,6 +48,14 @@ const adminUpdateBonus = {
   minProperties: 1
 }
 
+/** @type {import("ajv").Schema} Which sides ads between rounds are on for. */
+const adminUpdateAdsSettings = {
+  type: 'object',
+  properties: { web: { type: 'boolean' }, app: { type: 'boolean' } },
+  // Unknown keys are stripped, so require a known one rather than counting properties.
+  anyOf: [{ required: ['web'] }, { required: ['app'] }]
+}
+
 /** @type {import("ajv").Schema} A push notification to send from the admin app. */
 const adminSendAnnouncement = {
   type: 'object',
@@ -68,3 +76,4 @@ ajv.addSchema(adminSendAnnouncement, '/adminSendAnnouncement.json')
 ajv.addSchema(adminSetPlayerStatus, '/adminSetPlayerStatus.json')
 ajv.addSchema(adminAdjustWallet, '/adminAdjustWallet.json')
 ajv.addSchema(adminUpdateBonus, '/adminUpdateBonus.json')
+ajv.addSchema(adminUpdateAdsSettings, '/adminUpdateAdsSettings.json')

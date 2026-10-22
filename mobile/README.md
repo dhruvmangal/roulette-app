@@ -118,3 +118,15 @@ broadcasts a day (a test to one player doesn't count), and the same words for ev
 language. Large sends go out in the background in batches; each player's push has its
 own key, so a retry can never deliver the same one twice. It refuses to send at all
 while neither Firebase nor Apple is set up on the server.
+
+## Ads (AdMob)
+
+Interstitials between rounds use `@capacitor-community/admob`. Without ids the
+app serves Google's **test** ads only. For a release build:
+
+- `VITE_ADMOB_INTERSTITIAL_ANDROID` / `VITE_ADMOB_INTERSTITIAL_IOS`: interstitial ad unit ids, at web build time (`npm run web`).
+- `ADMOB_APP_ID_ANDROID`: the AdMob app id (`ca-app-pub-…~…`), read by Gradle. For iOS, replace `GADApplicationIdentifier` in `ios/App/App/Info.plist`.
+- Add Google's other SKAdNetwork ids to `Info.plist` (see Google's iOS setup guide).
+- Set the app's age rating / child-directed settings in AdMob to match the store listing.
+
+The web site uses AdSense: build the frontend with `VITE_ADSENSE_CLIENT=ca-pub-…` and `VITE_ADSENSE_SLOT=…`; the build also writes `ads.txt`.

@@ -7,6 +7,7 @@ coverage/
 .env
 .env.*
 !.env.example
+!frontend/.env.crazygames
 entrypoint/.env
 entrypoint/.env.*
 !entrypoint/.env.example
@@ -20,3 +21,5 @@ mobile/ios/
 mobile/.expo/
 # Raw 3D sources (large); optimised copies live in frontend/public
 frontend/assets-src/
+frontend/dist-crazygames/
+frontend/crazygames.zip

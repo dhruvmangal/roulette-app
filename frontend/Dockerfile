@@ -24,6 +24,11 @@ ENV VITE_API_ORIGIN=$VITE_API_ORIGIN
 # The public address of the site (https://example.com), for canonical links, sitemap.xml and robots.txt.
 ARG VITE_SITE_URL=""
 ENV VITE_SITE_URL=$VITE_SITE_URL
+# Ads between rounds on the web (AdSense). Unset, the site shows none.
+ARG VITE_ADSENSE_CLIENT=""
+ENV VITE_ADSENSE_CLIENT=$VITE_ADSENSE_CLIENT
+ARG VITE_ADSENSE_SLOT=""
+ENV VITE_ADSENSE_SLOT=$VITE_ADSENSE_SLOT
 RUN npm run build --workspace=@roulette/frontend
 
 FROM nginx:1.27.5-alpine AS production

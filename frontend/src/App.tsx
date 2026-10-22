@@ -34,10 +34,13 @@ import { readSetting, writeSetting } from './settings'
 import { onAppLink, onBackButton, startNative, watchNetwork } from './native'
 import type { DeepLink } from './deepLink'
 import { discordLogin, inDiscord } from './discord'
+import { onCrazyGames, setPlaying, startCrazyGames } from './crazygames'
 import { clearPendingReferral, keepReferral, pendingReferral, takeLinkFromUrl } from './invite'
 
 const STARTING_BALANCE = 1000
 const PLAYER_ID = 'local-player'
+/** Set once the sign-in reminder has been shown in this browser session. */
+const LOGIN_REMINDER_KEY = 'roulette.loginReminderShown'
 const DEFAULT_SETUP: Omit<SetupChoice, 'variant'> = { guests: [], bots: 3 }
 const SOCKET_WAIT_MS = 8000
 
@@ -99,7 +102,7 @@ function Roulette () {
   const session = useSession()
   const { t } = useI18n()
   const social = useSocial()
-  const [screen, setScreen] = useState<Screen>(() => routeForPath(window.location.pathname)?.screen ?? 'home')
+  const [screen, setScreen] = useState<Screen>(() => onCrazyGames ? 'home' : routeForPath(window.location.pathname)?.screen ?? 'home')
   const [table, setTable] = useState<OpenTable | null>(null)
   const [practice] = useState(() => new LocalWalletAdapter({ storage: deviceStorage(), startingBalance: STARTING_BALANCE }))
   const [practiceBalance, setPracticeBalance] = useState(() => practice.getBalance() ?? STARTING_BALANCE)
@@ -124,12 +127,18 @@ function Roulette () {
   const [networkOnline, setNetworkOnline] = useState(true)
 
   useEffect(() => { void startNative() }, [])
+  useEffect(() => { startCrazyGames() }, [])
+  // CrazyGames pauses its own things (and times its ads) by whether a table or game is being played.
+  const playing = Boolean(table) || (ARCADE_SCREENS as readonly string[]).includes(screen)
+  useEffect(() => { if (onCrazyGames) setPlaying(playing) }, [playing])
 
   // The address follows the screen (so every page has a link of its own and the
   // browser's back button works), and the screen follows the address.
   // Redirects (an unknown address, a sign-in-only page opened while signed out) replace the entry instead of adding one, so back never lands on them.
   const replaceUrl = useRef(true)
   useEffect(() => {
+    // The frame's address isn't ours to change.
+    if (onCrazyGames) return
     const route = routeForScreen(screen)
     if (routeForPath(window.location.pathname) !== route) {
       window.history[replaceUrl.current ? 'replaceState' : 'pushState'](null, '', route.path + window.location.search)
@@ -166,6 +175,16 @@ function Roulette () {
       return 'home'
     })
   }, [session.status, screen])
+
+  // A visitor who isn't signed in is asked once per browser session; closing the dialog keeps them browsing.
+  useEffect(() => {
+    if (session.status !== 'signedOut' || onCrazyGames || inDiscord) return
+    try {
+      if (sessionStorage.getItem(LOGIN_REMINDER_KEY)) return
+      sessionStorage.setItem(LOGIN_REMINDER_KEY, '1')
+    } catch { /* storage unavailable: ask on every load */ }
+    setSignIn(current => current ?? { reason: 'signin.reason.landing', then: () => {} })
+  }, [session.status])
 
   // Back on the home screen: are there tables still holding a seat for this player?
   const { api, status } = session
@@ -254,7 +273,7 @@ function Roulette () {
 
   function navigate (next: Screen) {
     // Learn, settings and the games are for everyone, signed in or not.
-    if (isPublicScreen(next)) {
+    if (isPublicScreen(next) || onCrazyGames) {
       setScreen(next)
       return
     }

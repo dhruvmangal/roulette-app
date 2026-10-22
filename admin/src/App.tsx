@@ -11,6 +11,7 @@ import { Notifications } from './pages/Notifications'
 import { Players } from './pages/Players'
 import { Referrals } from './pages/Referrals'
 import { Rooms } from './pages/Rooms'
+import { Settings } from './pages/Settings'
 import { Transactions } from './pages/Transactions'
 import { navigate, splitLocation, useLocation } from './router'
 
@@ -23,7 +24,8 @@ const NAV = [
   { to: '/tables', label: 'Tables' },
   { to: '/bonuses', label: 'Bonuses' },
   { to: '/reports', label: 'Chat reports' },
-  { to: '/audit', label: 'Audit log' }
+  { to: '/audit', label: 'Audit log' },
+  { to: '/settings', label: 'Settings' }
 ]
 
 function Page ({ path, params }: { path: string, params: URLSearchParams }) {
@@ -39,6 +41,7 @@ function Page ({ path, params }: { path: string, params: URLSearchParams }) {
     case '/bonuses': return <Bonuses />
     case '/reports': return <ChatReports params={params} />
     case '/audit': return <AuditLog params={params} />
+    case '/settings': return <Settings />
     default: return <div className='empty'>Page not found. <Link to='/'>Go to the dashboard</Link></div>
   }
 }

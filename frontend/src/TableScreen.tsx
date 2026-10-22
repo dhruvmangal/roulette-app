@@ -3,6 +3,8 @@ import { pocketColor, type Bet, type BetSelection, type Pocket, type Seat, type 
 import { seatOf, type ActionResult, type GameTransport, type TableState } from '@roulette/game-client'
 import { Board, type OtherStake } from './Board'
 import { ResultOverlay } from './ResultOverlay'
+import { AdHost } from './ads/AdHost'
+import { dismissWebAd, maybeShowAd, recordRound, warmUpAds } from './ads/ads'
 import { Wheel3D, type Announcement, type SpinRequest, type TableView } from './Wheel3D'
 import { unlockSpeech } from './dealer/speech'
 import { DEALERS, type DealerKind } from './dealer/types'
@@ -327,12 +329,28 @@ export function TableScreen ({ transport, label, onExit, topBar, reconnecting = 
     }, tableViewRef.current === 'dealer' ? DEALER_REVEAL_DELAY_MS : REVEAL_DELAY_MS)
   }, [announce, serverPaced, transport])
 
+  // The online clock keeps running under an ad, so an ad needs time to spare before betting reopens.
+  const AD_MIN_SECONDS_LEFT = 8
+  const secondsLeftRef = useRef(secondsLeft)
+  secondsLeftRef.current = secondsLeft
+
   const nextRound = useCallback(() => {
     setShowReveal(false)
-    if (serverPaced) return
-    act(transport.nextRound())
-    announce(translate('dealer.placeBets'))
+    recordRound()
+    if (serverPaced) {
+      if ((secondsLeftRef.current ?? 0) >= AD_MIN_SECONDS_LEFT) void maybeShowAd()
+      return
+    }
+    // Local play waits for the player, so the ad comes first and the next round deals after it.
+    void maybeShowAd().then(() => {
+      act(transport.nextRound())
+      announce(translate('dealer.placeBets'))
+    })
   }, [announce, serverPaced, transport])
+
+  useEffect(() => { warmUpAds() }, [])
+  // Betting reopening ends the web ad (the native one can't be closed from here).
+  useEffect(() => { if (phase === 'betting') dismissWebAd() }, [phase])
 
   function leave () {
     transport.leave()
@@ -487,6 +505,7 @@ export function TableScreen ({ transport, label, onExit, topBar, reconnecting = 
 
       {chat}
 
+      <AdHost />
       {showReveal && reveal && !table.closed && <ResultOverlay settlement={reveal.settlement} playerName={sharedDevice ? reveal.seat.name : undefined} onClose={nextRound} />}
 
       {table.closed && table.summary && (

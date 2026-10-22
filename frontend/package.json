@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
+    "build:crazygames": "tsc --noEmit && vite build --mode crazygames --outDir dist-crazygames --emptyOutDir && cd dist-crazygames && rm -f ../crazygames.zip && zip -qr ../crazygames.zip .",
     "lint": "tsc --noEmit",
     "test": "node --experimental-strip-types --test test/*.test.ts",
     "typecheck": "tsc --noEmit",
@@ -13,6 +14,7 @@
     "build:medic": "gltf-transform optimize assets-src/medic.glb public/dealer/medic.glb --join true --compress meshopt --simplify-ratio 0.1 --simplify-error 0.002 --texture-compress webp --texture-size 1024"
   },
   "dependencies": {
+    "@capacitor-community/admob": "8.2.1",
     "@capacitor/app": "8.1.2",
     "@capacitor/core": "8.5.3",
     "@capacitor/device": "8.0.3",

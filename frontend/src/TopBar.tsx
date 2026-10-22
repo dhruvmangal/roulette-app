@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useI18n } from './i18n'
 import { useSession } from './session'
 import { useSocial } from './social'
+import { onCrazyGames } from './crazygames'
 
 import { routeForScreen, type Screen } from './routes'
 
@@ -49,7 +50,7 @@ export function TopBar ({ onNavigate, onSignIn, onSaveAccount, balance, practice
   return (
     <header className="topbar">
       <a className="wordmark" href={routeForScreen('home').path} onClick={link('home')} aria-label={t('nav.home')}>
-        <img className="mark" src="/favicon.svg" alt="" width="36" height="36" /><span>Roulette</span>
+        <img className="mark" src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="36" height="36" /><span>Roulette</span>
       </a>
       <span className="badge"><i /> {t('nav.badge')}</span>
       <a className="topbar-link" href={routeForScreen('games').path} onClick={link('games')}>{t('nav.games')}</a>
@@ -92,7 +93,7 @@ export function TopBar ({ onNavigate, onSignIn, onSaveAccount, balance, practice
               )}
             </div>
             )
-          : status === 'signedOut' && <button type="button" className="btn-ghost small" onClick={onSignIn}>{t('nav.signIn')}</button>}
+          : status === 'signedOut' && !onCrazyGames && <button type="button" className="btn-ghost small" onClick={onSignIn}>{t('nav.signIn')}</button>}
       </div>
     </header>
   )

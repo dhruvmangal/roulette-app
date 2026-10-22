@@ -12,6 +12,7 @@ import friendRoutes from './friend.routes'
 import achievementRoutes from './achievement.routes'
 import linkRoutes from './link.routes'
 import arcadeRoutes from './arcade.routes'
+import configRoutes from './config.routes'
 
 const v1Router = express.Router()
 
@@ -27,6 +28,7 @@ v1Router.use('/friends', friendRoutes)
 v1Router.use('/achievements', achievementRoutes)
 v1Router.use('/links', linkRoutes)
 v1Router.use('/arcade', arcadeRoutes)
+v1Router.use('/config', configRoutes)
 v1Router.use('/admin', adminRoutes)
 
 export default v1Router

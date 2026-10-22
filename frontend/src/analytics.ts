@@ -1,4 +1,5 @@
 import { inDiscord } from './discord'
+import { onCrazyGames } from './crazygames'
 
 /** The Google Analytics 4 measurement ID. Set VITE_GA_MEASUREMENT_ID to use another, or to an empty value to turn analytics off. */
 const MEASUREMENT_ID: string = (import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined) ?? 'G-QNNF20V4YE'
@@ -17,7 +18,7 @@ let started = false
 /** Loads Google Analytics once, in the browser, for the real site only: not on localhost, and not inside Discord. */
 function start (): boolean {
   if (started) return true
-  if (!MEASUREMENT_ID || typeof window === 'undefined' || isLocal() || inDiscord) return false
+  if (!MEASUREMENT_ID || typeof window === 'undefined' || isLocal() || inDiscord || onCrazyGames) return false
   started = true
   window.dataLayer = window.dataLayer || []
   window.gtag = function gtag () { window.dataLayer!.push(arguments) } // eslint-disable-line prefer-rest-params

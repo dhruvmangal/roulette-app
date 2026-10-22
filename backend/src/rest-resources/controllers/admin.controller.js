@@ -3,6 +3,7 @@ import {
   AdminLoginService,
   AdminLogoutService,
   ForcePlayerLogoutService,
+  GetAdsSettingsService,
   GetAnnouncementReachService,
   GetDashboardStatsService,
   GetPlayerDetailService,
@@ -16,6 +17,7 @@ import {
   ListTransactionsService,
   SendAnnouncementService,
   SetPlayerStatusService,
+  UpdateAdsSettingsService,
   UpdateBonusService
 } from '~/services/admin'
 import { sendResponse } from '~/utils/response.helpers'
@@ -69,6 +71,10 @@ export default class AdminController {
   })
 
   static listBonuses = respond(ListBonusesService, () => ({}))
+
+  static getAdsSettings = respond(GetAdsSettingsService, () => ({}))
+
+  static updateAdsSettings = respond(UpdateAdsSettingsService, (req) => req.body)
 
   static updateBonus = respond(UpdateBonusService, (req) => ({ ...req.body, bonusId: toInt(req.params.bonusId) }))
 

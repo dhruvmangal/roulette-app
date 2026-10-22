@@ -7,6 +7,7 @@ import { tapFeedback } from './native'
 import { isNativeApp } from './platform'
 import { disablePush, enablePush, pushPermission, type PushPermission } from './push'
 import { useSession } from './session'
+import { onCrazyGames } from './crazygames'
 import { setPreferences, usePreferences } from './preferences'
 
 function Switch ({ label, hint, checked, onChange }: { label: string, hint?: string, checked: boolean, onChange: (next: boolean) => void }) {
@@ -155,7 +156,7 @@ export function SettingsScreen ({ extra }: { extra?: ReactNode }) {
         <p className="analytics-note">{missingVoice ? t('language.noVoice') : t('language.hint')}</p>
       </section>
 
-      <Notifications />
+      {!onCrazyGames && <Notifications />}
       {extra}
     </main>
   )

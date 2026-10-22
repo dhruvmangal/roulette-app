@@ -1,4 +1,5 @@
 import { ARCADE_RTP } from '@roulette/engine'
+import { onCrazyGames } from './crazygames'
 import type { LocalWalletAdapter } from '@roulette/game-client'
 import { useI18n, type MessageKey } from './i18n'
 import { ARCADE_SCREENS, routeForScreen, type ArcadeScreen as ArcadeGameScreen, type Screen } from './routes'
@@ -38,7 +39,7 @@ export function ArcadeScreen ({ screen, practice, onNavigate, onSignIn }: Props)
       <div>
         <span>{arcade.online ? t('nav.chips') : t('nav.practiceChips')}</span>
         <strong>{number(arcade.balance)}</strong>
-        {!arcade.online && <button type="button" className="balance-link" onClick={onSignIn}>{t('games.signIn')} →</button>}
+        {!arcade.online && !onCrazyGames && <button type="button" className="balance-link" onClick={onSignIn}>{t('games.signIn')} →</button>}
       </div>
     </div>
   )

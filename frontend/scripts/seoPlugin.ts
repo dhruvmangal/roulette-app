@@ -69,6 +69,9 @@ export function seoPages (siteUrl = process.env.VITE_SITE_URL ?? ''): Plugin {
       const robots = ['User-agent: *', 'Allow: /', ...ROUTES.filter(route => !route.indexable).map(route => `Disallow: ${route.path}`)]
       if (origin) robots.push('', `Sitemap: ${origin}/sitemap.xml`)
       writeFileSync(resolve(outDir, 'robots.txt'), robots.join('\n') + '\n')
+      // AdSense only serves a site whose ads.txt lists its publisher id (ca-pub-123 -> pub-123).
+      const adsenseClient = process.env.VITE_ADSENSE_CLIENT
+      if (adsenseClient) writeFileSync(resolve(outDir, 'ads.txt'), `google.com, ${adsenseClient.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0\n`)
       if (origin) {
         const urls = sitemapPaths().map(path => `  <url><loc>${origin}${path}</loc></url>`).join('\n')
         writeFileSync(resolve(outDir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`)

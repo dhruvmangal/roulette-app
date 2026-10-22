@@ -66,6 +66,12 @@ export interface AuthProviders {
   discord: { clientId: string } | null
 }
 
+/** Switches the server sends to the apps at start, so an admin can change them without a release. */
+export interface AppConfig {
+  /** Whether ads between rounds may show on the website and in the mobile app. */
+  ads: { web: boolean, app: boolean }
+}
+
 /** What the app got from Google or Apple's sign-in. */
 export interface ProviderToken {
   idToken: string

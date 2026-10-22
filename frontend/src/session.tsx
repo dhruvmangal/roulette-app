@@ -7,6 +7,7 @@ import { apiOrigin } from './platform'
 import { collectDeviceReport } from './deviceReport'
 import { onForeground } from './native'
 import { disablePush } from './push'
+import { onCrazyGames } from './crazygames'
 
 const DEVICE_REPORT_EVERY_MS = 30 * 60 * 1000
 
@@ -65,7 +66,7 @@ const tokens = deviceTokenStore()
 const api = createApiClient({ baseUrl: apiOrigin, tokens })
 
 export function SessionProvider ({ children }: { children: ReactNode }) {
-  const [status, setStatus] = useState<SessionStatus>(() => tokens.get() ? 'loading' : 'signedOut')
+  const [status, setStatus] = useState<SessionStatus>(() => !onCrazyGames && tokens.get() ? 'loading' : 'signedOut')
   const [player, setPlayer] = useState<PlayerProfile | null>(null)
   const [balance, setBalance] = useState<number | null>(null)
   const [providers, setProviders] = useState<AuthProviders | null>(null)
@@ -74,12 +75,14 @@ export function SessionProvider ({ children }: { children: ReactNode }) {
   const [connected, setConnected] = useState(false)
 
   useEffect(() => {
+    // No server on CrazyGames: there is nothing to ask.
+    if (onCrazyGames) { setProviders({ google: null, apple: null, discord: null }); return }
     api.providers().then(result => setProviders(result.providers)).catch(() => setProviders({ google: null, apple: null, discord: null }))
   }, [])
 
   // Resume a saved session: the api-client refreshes an expired access token on its own.
   useEffect(() => {
-    if (!tokens.get()) return
+    if (onCrazyGames || !tokens.get()) return
     api.me()
       .then(({ player: profile, wallet: current }) => {
         setPlayer(profile)

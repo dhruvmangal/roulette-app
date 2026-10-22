@@ -26,9 +26,10 @@ jest.mock('~/db/models', () => {
   const AdminAuditLog = { create: jest.fn(async (values) => values) }
   const Player = { findByPk: jest.fn() }
   const PlayerSession = { update: jest.fn() }
+  const AppSetting = { findByPk: jest.fn(), create: jest.fn(async (values) => values) }
   return {
     __esModule: true,
-    default: { ...ledger.context.dbModels, AdminUser, AdminAuditLog, Player, PlayerSession },
+    default: { ...ledger.context.dbModels, AdminUser, AdminAuditLog, Player, PlayerSession, AppSetting },
     sequelize: { ...ledger.context.sequelize, query: jest.fn() },
     ledger
   }
@@ -41,7 +42,7 @@ import socketEmitter from '~/libs/socketEmitter'
 // eslint-disable-next-line import/first
 import app from '~/rest-resources'
 
-const { AdminUser, AdminAuditLog, Player, PlayerSession } = models
+const { AdminUser, AdminAuditLog, Player, PlayerSession, AppSetting } = models
 const PASSWORD = 'correct horse battery'
 let admin
 
@@ -236,5 +237,68 @@ describe('admin push notifications', () => {
     expect((await get('audience=EVERYONE')).status).toBe(400)
     expect((await get('days=7')).status).toBe(400)
     expect((await get('audience=INACTIVE')).status).toBe(400)
+  })
+})
+
+describe('ads settings', () => {
+  const get = () => request(app).get('/api/v1/admin/settings/ads').set(bearer(adminToken()))
+  const patch = (body) => request(app).patch('/api/v1/admin/settings/ads').set(bearer(adminToken())).send(body)
+
+  it('need an admin', async () => {
+    expect((await request(app).get('/api/v1/admin/settings/ads')).status).toBe(401)
+    expect((await request(app).patch('/api/v1/admin/settings/ads').send({ web: false })).status).toBe(401)
+  })
+
+  it('are on for both until an admin changes them', async () => {
+    AppSetting.findByPk.mockResolvedValue(null)
+    const res = await get()
+    expect(res.status).toBe(200)
+    expect(res.body.data.ads).toEqual({ web: true, app: true })
+  })
+
+  it('turn off one side only, keep the other, and audit the change', async () => {
+    AppSetting.findByPk.mockResolvedValue(null)
+    const res = await patch({ web: false })
+
+    expect(res.status).toBe(200)
+    expect(res.body.data.ads).toEqual({ web: false, app: true })
+    expect(AppSetting.create).toHaveBeenCalledWith({ key: 'ads', value: { web: false, app: true } }, expect.anything())
+    expect(AdminAuditLog.create).toHaveBeenCalledWith(expect.objectContaining({
+      action: 'SETTINGS_UPDATE',
+      targetType: 'SETTING',
+      targetId: 'ads',
+      details: { before: { web: true, app: true }, after: { web: false, app: true } }
+    }), expect.anything())
+  })
+
+  it('update the stored row when there is one', async () => {
+    const row = { value: { web: false, app: true }, update: jest.fn() }
+    AppSetting.findByPk.mockResolvedValue(row)
+    const res = await patch({ app: false })
+
+    expect(res.body.data.ads).toEqual({ web: false, app: false })
+    expect(row.update).toHaveBeenCalledWith({ value: { web: false, app: false } }, expect.anything())
+    expect(AppSetting.create).not.toHaveBeenCalled()
+  })
+
+  it('refuse an empty change, a non-boolean and an unknown switch', async () => {
+    const statuses = []
+    for (const body of [{}, { web: 'no' }, { tv: false }]) statuses.push((await patch(body)).status)
+    expect(statuses).toEqual([400, 400, 400])
+  })
+})
+
+describe('GET /api/v1/config', () => {
+  it('is public and reports the ads switches', async () => {
+    AppSetting.findByPk.mockResolvedValue({ value: { web: true, app: false } })
+    const res = await request(app).get('/api/v1/config')
+    expect(res.status).toBe(200)
+    expect(res.body.data.config).toEqual({ ads: { web: true, app: false } })
+  })
+
+  it('treats a damaged value as the default (on)', async () => {
+    AppSetting.findByPk.mockResolvedValue({ value: { web: 'yes' } })
+    const res = await request(app).get('/api/v1/config')
+    expect(res.body.data.config.ads).toEqual({ web: true, app: true })
   })
 })

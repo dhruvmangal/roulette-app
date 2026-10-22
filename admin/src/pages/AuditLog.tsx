@@ -11,6 +11,7 @@ function describe (log: Log) {
     case 'PLAYER_STATUS': return `${String(d.from)} → ${String(d.to)} — “${String(d.reason)}”`
     case 'PLAYER_LOGOUT': return 'Signed out everywhere'
     case 'BONUS_UPDATE': return `${String(d.code)}: ${Object.entries((d.after ?? {}) as Record<string, unknown>).map(([k, v]) => `${k} ${String((d.before as Record<string, unknown>)?.[k])} → ${String(v)}`).join(', ')}`
+    case 'SETTINGS_UPDATE': return `ads ${Object.entries((d.after ?? {}) as Record<string, unknown>).map(([k, v]) => `${k} ${String((d.before as Record<string, unknown>)?.[k])} → ${String(v)}`).join(', ')}`
     default: return JSON.stringify(d)
   }
 }
