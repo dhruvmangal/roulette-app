@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
 import type { Plugin } from 'vite'
 import { ROUTES, SITE_NAME, sitemapPaths, type Route } from '../src/routes'
 
@@ -61,7 +61,10 @@ export function seoPages (siteUrl = process.env.VITE_SITE_URL ?? ''): Plugin {
       const html = readFileSync(indexPath, 'utf8')
       for (const route of ROUTES) {
         const page = pageFor(html, route, origin)
-        writeFileSync(resolve(outDir, route.path === '/' ? 'index.html' : `${route.path.slice(1)}.html`), page)
+        // Nested paths (/games/crash) are written as games/crash.html.
+        const file = resolve(outDir, route.path === '/' ? 'index.html' : `${route.path.slice(1)}.html`)
+        mkdirSync(dirname(file), { recursive: true })
+        writeFileSync(file, page)
       }
       const robots = ['User-agent: *', 'Allow: /', ...ROUTES.filter(route => !route.indexable).map(route => `Disallow: ${route.path}`)]
       if (origin) robots.push('', `Sitemap: ${origin}/sitemap.xml`)

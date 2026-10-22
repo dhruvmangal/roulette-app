@@ -18,7 +18,9 @@ import { LeaderboardScreen } from './LeaderboardScreen'
 import { OnlineDialog, type OnlineChoice, type OnlineMode } from './OnlineDialog'
 import { SaveAccountDialog, SignInDialog } from './SignInDialog'
 import { TopBar, type Screen } from './TopBar'
-import { routeForPath, routeForScreen } from './routes'
+import { ArcadeScreen } from './ArcadeScreen'
+import { LegalScreen } from './LegalScreen'
+import { ARCADE_SCREENS, isPublicScreen, routeForPath, routeForScreen } from './routes'
 import { applyRouteMeta } from './seo'
 import { SessionProvider, errorMessage, useSession } from './session'
 import { SocialProvider, useSocial } from './social'
@@ -157,7 +159,7 @@ function Roulette () {
       return current?.online ? null : current
     })
     setScreen(current => {
-      if (current === 'home' || current === 'learn' || current === 'settings') return current
+      if (isPublicScreen(current)) return current
       replaceUrl.current = true
       return 'home'
     })
@@ -249,8 +251,8 @@ function Roulette () {
   }, [session.status])
 
   function navigate (next: Screen) {
-    // Learn is for everyone, signed in or not.
-    if (next === 'home' || next === 'learn' || next === 'settings') {
+    // Learn, settings and the games are for everyone, signed in or not.
+    if (isPublicScreen(next)) {
       setScreen(next)
       return
     }
@@ -452,6 +454,7 @@ function Roulette () {
                 onGiveUpSeat={seat => { void giveUpSeat(seat) }}
                 onLeaderboard={() => navigate('leaderboard')}
                 onLearn={() => navigate('learn')}
+                onGames={game => navigate(game)}
                 onRefer={() => navigate('refer')}
                 onFriends={() => navigate('friends')}
                 onOffline={variant => setSetupVariant(variant)}
@@ -461,6 +464,15 @@ function Roulette () {
             {screen === 'wallet' && session.status === 'signedIn' && <WalletScreen onBonuses={() => setScreen('bonuses')} />}
             {screen === 'bonuses' && session.status === 'signedIn' && <BonusesScreen onClaimed={amount => setToast(t('toast.chipsAdded', { amount: amount.toLocaleString() }))} />}
             {screen === 'history' && session.status === 'signedIn' && <HistoryScreen />}
+            {(screen === 'games' || (ARCADE_SCREENS as readonly string[]).includes(screen)) && (
+              <ArcadeScreen
+                screen={screen as 'games' | typeof ARCADE_SCREENS[number]}
+                practice={practice}
+                onNavigate={navigate}
+                onSignIn={() => setSignIn({ then: () => {} })}
+              />
+            )}
+            {(screen === 'privacy' || screen === 'terms') && <LegalScreen kind={screen} />}
             {screen === 'learn' && <LearnScreen />}
             {screen === 'settings' && <SettingsScreen />}
             {screen === 'friends' && session.status === 'signedIn' && <FriendsScreen onJoin={code => { void startOnline({ mode: 'join', code }) }} />}
@@ -471,7 +483,14 @@ function Roulette () {
           </>
           )}
 
-      <footer className="footer"><span>No real money. No prizes. Just play.</span><span>American · European</span></footer>
+      <footer className="footer">
+        <span>No real money. No prizes. Just play.</span>
+        <nav className="footer-links" aria-label={t('legal.label')}>
+          {(['terms', 'privacy'] as const).map(page => (
+            <a key={page} href={routeForScreen(page).path} onClick={event => { if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey) { event.preventDefault(); if (!table) navigate(page) } }}>{t(`legal.${page}` as MessageKey)}</a>
+          ))}
+        </nav>
+      </footer>
 
       {setupVariant && <TableSetup initial={{ ...setup, variant: setupVariant }} onStart={startOffline} onClose={() => setSetupVariant(null)} />}
       {onlineMode && (

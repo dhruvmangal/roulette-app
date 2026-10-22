@@ -52,7 +52,8 @@ export function TopBar ({ onNavigate, onSignIn, onSaveAccount, balance, practice
         <img className="mark" src="/favicon.svg" alt="" width="36" height="36" /><span>Roulette</span>
       </a>
       <span className="badge"><i /> {t('nav.badge')}</span>
-      <a className="topbar-link" href={routeForScreen('learn').path} onClick={link('learn')}>{t('nav.learn')}</a>
+      <a className="topbar-link" href={routeForScreen('games').path} onClick={link('games')}>{t('nav.games')}</a>
+      <a className="topbar-link topbar-link-next" href={routeForScreen('learn').path} onClick={link('learn')}>{t('nav.learn')}</a>
       <button type="button" className="topbar-icon" onClick={() => onNavigate('settings')} aria-label={t('menu.settings')} title={t('menu.settings')}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.5-2.3.9a7.5 7.5 0 0 0-1.7-1L15 3.5h-4l-.4 2.4a7.5 7.5 0 0 0-1.7 1l-2.3-.9-2 3.5 2 1.5a7.6 7.6 0 0 0 0 2l-2 1.5 2 3.5 2.3-.9a7.5 7.5 0 0 0 1.7 1l.4 2.4h4l.4-2.4a7.5 7.5 0 0 0 1.7-1l2.3.9 2-3.5-2-1.5ZM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z" transform="translate(-1 0)" /></svg>
       </button>
@@ -80,6 +81,7 @@ export function TopBar ({ onNavigate, onSignIn, onSaveAccount, balance, practice
                   <button type="button" role="menuitem" onClick={() => go('refer')}>{t('menu.refer')}</button>
                   <button type="button" role="menuitem" onClick={() => go('history')}>{t('menu.history')}</button>
                   <button type="button" role="menuitem" onClick={() => go('analytics')}>{t('menu.analytics')}</button>
+                  <button type="button" role="menuitem" onClick={() => go('games')}>{t('menu.games')}</button>
                   <button type="button" role="menuitem" onClick={() => go('learn')}>{t('menu.learn')}</button>
                   <button type="button" role="menuitem" onClick={() => go('leaderboard')}>{t('menu.leaderboard')}</button>
                   <button type="button" role="menuitem" onClick={() => go('settings')}>{t('menu.settings')}</button>

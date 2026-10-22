@@ -3,7 +3,11 @@
  * and link previews should say about it. Kept free of browser imports so the
  * build can use it to write the static pages, sitemap and robots.txt.
  */
-export type Screen = 'home' | 'wallet' | 'bonuses' | 'history' | 'analytics' | 'learn' | 'refer' | 'settings' | 'friends' | 'achievements' | 'leaderboard'
+/** The mini games, each with a page of its own. */
+export const ARCADE_SCREENS = ['aviator', 'plinko', 'wheel', 'horses'] as const
+export type ArcadeScreen = typeof ARCADE_SCREENS[number]
+
+export type Screen = 'home' | 'games' | ArcadeScreen | 'privacy' | 'terms' | 'wallet' | 'bonuses' | 'history' | 'analytics' | 'learn' | 'refer' | 'settings' | 'friends' | 'achievements' | 'leaderboard'
 
 export interface Route {
   screen: Screen
@@ -31,6 +35,41 @@ export const ROUTES: readonly Route[] = [
     path: '/learn',
     title: 'Learn Roulette: Odds, Payouts & Betting Strategies | Roulette',
     description: 'How roulette really works: bet types, payouts, house edge on American and European wheels, and simulations of Martingale, Fibonacci and other betting systems.',
+    indexable: true
+  },
+  {
+    screen: 'games',
+    path: '/games',
+    title: 'Free Mini Games: Aviator, Plinko, Wheel & More | Roulette',
+    description: `Four quick casino games: Aviator, Plinko, the Prize Wheel and a Horse Race. ${PLAY_ONLY}`,
+    indexable: true
+  },
+  {
+    screen: 'aviator',
+    path: '/games/aviator',
+    title: 'Aviator: Fly Two Bets and Land Them in Time | Roulette',
+    description: `Place up to two bets on one flight and cash each out before the plane flies away. ${PLAY_ONLY}`,
+    indexable: true
+  },
+  {
+    screen: 'plinko',
+    path: '/games/plinko',
+    title: 'Plinko: Drop the Ball, Pick Your Risk | Roulette',
+    description: `Drop a ball through 8 to 16 rows of pegs and choose low, medium or high risk for bigger multipliers. ${PLAY_ONLY}`,
+    indexable: true
+  },
+  {
+    screen: 'wheel',
+    path: '/games/wheel',
+    title: 'Prize Wheel: Spin for Multipliers | Roulette',
+    description: `Spin the prize wheel for multipliers up to 10x. Pick low, medium or high risk. ${PLAY_ONLY}`,
+    indexable: true
+  },
+  {
+    screen: 'horses',
+    path: '/games/horses',
+    title: 'Horse Race: Back Your Winner | Roulette',
+    description: `Back one or more of six horses at fixed odds and watch the race. ${PLAY_ONLY}`,
     indexable: true
   },
   {
@@ -95,6 +134,20 @@ export const ROUTES: readonly Route[] = [
     title: 'Settings | Roulette',
     description: 'Language, sound and table preferences.',
     indexable: false
+  },
+  {
+    screen: 'privacy',
+    path: '/privacy',
+    title: 'Privacy Policy | Roulette',
+    description: 'What Roulette collects when you play, why, how long it is kept, and the choices you have.',
+    indexable: true
+  },
+  {
+    screen: 'terms',
+    path: '/terms',
+    title: 'Terms of Service | Roulette',
+    description: 'The rules for playing Roulette: play chips with no cash value, fair play, accounts and what we may do.',
+    indexable: true
   }
 ]
 
@@ -105,6 +158,10 @@ export function routeForPath (path: string): Route | null {
   const wanted = normalise(path)
   return ROUTES.find(route => route.path === wanted) ?? null
 }
+
+/** Pages anyone can open: the rest need an account. */
+export const isPublicScreen = (screen: Screen): boolean =>
+  screen === 'home' || screen === 'learn' || screen === 'settings' || screen === 'games' || screen === 'privacy' || screen === 'terms' || (ARCADE_SCREENS as readonly string[]).includes(screen)
 
 export const routeForScreen = (screen: Screen): Route => ROUTES.find(route => route.screen === screen)!
 

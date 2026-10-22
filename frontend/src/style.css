@@ -921,3 +921,18 @@ button:disabled { cursor: not-allowed; }
 
 /* Wide letter-spacing suits capital Latin letters; it pulls Devanagari's joined letters apart. */
 html:lang(hi) *, html:lang(hi) *::before, html:lang(hi) *::after { letter-spacing: normal !important; }
+
+/* ── Legal pages ─────────────────────────────────────────────────── */
+.footer-links { display: flex; gap: 18px; }
+.footer-links a { color: inherit; text-decoration: none; }
+.footer-links a:hover { color: var(--gold); }
+.legal { max-width: 780px; }
+.legal .lede { max-width: none; margin: 0 0 28px; }
+.legal-updated { margin: 10px 0 0; color: var(--faint); font-size: 13px; }
+.legal-section { margin-bottom: 28px; }
+.legal-section h2 { margin: 0 0 10px; font: 600 22px var(--display); color: var(--gold-hi); }
+.legal-section p, .legal-section li { color: #cfc8b8; font-size: 15px; line-height: 1.7; }
+.legal-section ul { display: grid; gap: 8px; margin: 0; padding-left: 20px; }
+.legal-section b { color: var(--text); }
+.legal-section a, .legal-note a { color: var(--gold); }
+.legal-note { margin-top: 14px; text-align: center; }

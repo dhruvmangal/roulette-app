@@ -425,3 +425,43 @@ export const PushNotConfiguredErrorType = {
   description: 'Push notifications are off: set FCM_SERVICE_ACCOUNT_JSON for Android or APNS_KEY, APNS_KEY_ID and APNS_TEAM_ID for iPhone on the server',
   errorCode: 1606
 }
+
+export const ArcadeRoundActiveErrorType = {
+  name: 'ArcadeRoundActive',
+  statusCode: StatusCodes.CONFLICT,
+  isOperational: true,
+  description: 'A flight is still in the air. Cash out or wait for it to land',
+  errorCode: 1800
+}
+
+export const ArcadeRoundNotFoundErrorType = {
+  name: 'ArcadeRoundNotFound',
+  statusCode: StatusCodes.NOT_FOUND,
+  isOperational: true,
+  description: 'There is no such round',
+  errorCode: 1801
+}
+
+export const ArcadeBetLimitErrorType = {
+  name: 'ArcadeBetLimit',
+  statusCode: StatusCodes.BAD_REQUEST,
+  isOperational: true,
+  description: 'That stake is outside the limits for this game',
+  errorCode: 1802
+}
+
+export const ArcadeBadChoiceErrorType = {
+  name: 'ArcadeBadChoice',
+  statusCode: StatusCodes.BAD_REQUEST,
+  isOperational: true,
+  description: 'That choice is not on offer in this game',
+  errorCode: 1803
+}
+
+export const ArcadeAlreadyOverErrorType = {
+  name: 'ArcadeAlreadyOver',
+  statusCode: StatusCodes.CONFLICT,
+  isOperational: true,
+  description: 'Too late: the flight has already ended',
+  errorCode: 1804
+}

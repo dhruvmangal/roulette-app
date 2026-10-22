@@ -22,5 +22,6 @@ export const WALLET_REFERENCE_TYPES = {
   ROUND: 'ROUND',
   BET: 'BET',
   BONUS: 'BONUS',
-  ADMIN: 'ADMIN'
+  ADMIN: 'ADMIN',
+  ARCADE: 'ARCADE'
 }

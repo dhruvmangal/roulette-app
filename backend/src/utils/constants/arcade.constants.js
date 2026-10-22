@@ -1,0 +1,12 @@
+export const ARCADE_STATUS = {
+  ACTIVE: 'ACTIVE',
+  SETTLED: 'SETTLED'
+}
+
+export const CRASH_BET_STATE = {
+  ACTIVE: 'ACTIVE',
+  CASHED: 'CASHED',
+  CRASHED: 'CRASHED'
+}
+
+export const ARCADE_HISTORY_LIMIT = 50

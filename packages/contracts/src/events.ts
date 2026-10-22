@@ -73,7 +73,12 @@ export const ERROR_CODES = {
   FriendRequestNotFound: 1711,
   FriendNotFound: 1712,
   FriendInviteNotAllowed: 1713,
-  PlayerNameNotFound: 1714
+  PlayerNameNotFound: 1714,
+  ArcadeRoundActive: 1800,
+  ArcadeRoundNotFound: 1801,
+  ArcadeBetLimit: 1802,
+  ArcadeBadChoice: 1803,
+  ArcadeAlreadyOver: 1804
 } as const
 
 /** Quick chat reactions; each client draws its own icon for an id. */

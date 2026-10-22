@@ -1,9 +1,10 @@
 import type {
+  ArcadeRound, CrashRound, HorsesRound, PlinkoRound, WheelRound,
   AchievementsPage, DeferredLink, ApiErrorDetail, AuthProviders, AuthResult, BonusOffer, CreateRoomInput, DeviceReport, Envelope, Friend, FriendRequestResult, FriendsList, HistoryRound, IdentityProvider, Leaderboard,
   LeaderboardPeriod, MyTable, NotificationCategory, NotificationSettings, RegisterPushTokenInput, PlayerProfile, PlayerStats, ReferralPage, StatsPeriod, ProviderToken, TokenProvider,
   PublicRoom, RoomState, Tokens, Wallet, WalletTransaction, WalletTransactionType
 } from '@roulette/contracts'
-import type { VariantName } from '@roulette/engine'
+import type { ArcadeGame, ArcadeRisk, CrashGame, HorseBet, VariantName } from '@roulette/engine'
 
 /** Where the client keeps the signed-in player's tokens (memory, localStorage, secure storage, ...). */
 export interface TokenStore {
@@ -149,6 +150,17 @@ export function createApiClient ({ baseUrl, tokens, fetch: fetchImpl = globalThi
     wallet: () => call<{ wallet: Wallet }>('GET', '/wallet'),
     transactions: (filter: { limit?: number, pageNo?: number, type?: WalletTransactionType, from?: string, to?: string } = {}) =>
       call<{ transactions: Page<WalletTransaction> }>('GET', `/wallet/transactions${query(filter)}`),
+
+    // Arcade: each play carries a requestId, so a retry after a dropped connection can't stake twice.
+    playPlinko: (input: { stake: number, rows: number, risk: ArcadeRisk, requestId: string }) => call<{ round: PlinkoRound, wallet: Wallet }>('POST', '/arcade/plinko/play', input),
+    playWheel: (input: { stake: number, risk: ArcadeRisk, requestId: string }) => call<{ round: WheelRound, wallet: Wallet }>('POST', '/arcade/wheel/play', input),
+    playHorses: (input: { bets: HorseBet[], requestId: string }) => call<{ round: HorsesRound, wallet: Wallet }>('POST', '/arcade/horses/play', input),
+    startCrash: (input: { game: CrashGame, bets: Array<{ stake: number, autoCashout?: number | null }>, requestId: string }) => call<{ round: CrashRound, wallet: Wallet }>('POST', '/arcade/crash/start', input),
+    /** Cashes a bet out at the multiplier showing on the server's clock; the answer says how the bet ended. */
+    cashOutCrash: (arcadeRoundId: number, slot: number) => call<{ round: CrashRound, wallet: Wallet }>('POST', `/arcade/crash/${arcadeRoundId}/cashout`, { slot }),
+    /** The flight still in the air, if any; one that has landed since comes back as `landed`. */
+    activeCrash: (game: CrashGame) => call<{ round: CrashRound | null, landed: CrashRound | null, wallet?: Wallet }>('GET', `/arcade/crash/active${query({ game })}`),
+    arcadeHistory: (filter: { game?: ArcadeGame, limit?: number } = {}) => call<{ rounds: ArcadeRound[] }>('GET', `/arcade/history${query(filter)}`),
 
     // Refer & earn
     referrals: () => call<ReferralPage>('GET', '/referrals/me'),

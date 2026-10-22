@@ -74,5 +74,9 @@
 	"That player isn't on your friends list": "That player isn't on your friends list",
 	"TypeError": "TypeError",
 	"PushNotConfigured": "PushNotConfigured",
-	"Push notifications are off: set FCM_SERVICE_ACCOUNT_JSON for Android or APNS_KEY, APNS_KEY_ID and APNS_TEAM_ID for iPhone on the server": "Push notifications are off: set FCM_SERVICE_ACCOUNT_JSON for Android or APNS_KEY, APNS_KEY_ID and APNS_TEAM_ID for iPhone on the server"
+	"Push notifications are off: set FCM_SERVICE_ACCOUNT_JSON for Android or APNS_KEY, APNS_KEY_ID and APNS_TEAM_ID for iPhone on the server": "Push notifications are off: set FCM_SERVICE_ACCOUNT_JSON for Android or APNS_KEY, APNS_KEY_ID and APNS_TEAM_ID for iPhone on the server",
+	"ArcadeBadChoice": "ArcadeBadChoice",
+	"That choice is not on offer in this game": "That choice is not on offer in this game",
+	"ArcadeRoundActive": "ArcadeRoundActive",
+	"A flight is still in the air. Cash out or wait for it to land": "A flight is still in the air. Cash out or wait for it to land"
 }

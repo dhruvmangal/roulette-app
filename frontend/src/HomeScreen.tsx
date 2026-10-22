@@ -4,6 +4,9 @@ import { useI18n, type MessageKey } from './i18n'
 import { Wheel3D } from './Wheel3D'
 import { VARIANT_INFO } from './TableScreen'
 import type { OnlineMode } from './OnlineDialog'
+import { GameIcon } from './arcade/GameIcon'
+import { posterOf } from './arcade/posters'
+import { ARCADE_SCREENS, routeForScreen, type ArcadeScreen } from './routes'
 
 /** Each card's picture (public/cards/*.jpg): views of the same wheel, so the cards match. */
 const CARD_IMAGES: Record<OnlineMode | VariantName, string> = {
@@ -26,6 +29,7 @@ interface Props {
   onGiveUpSeat: (table: MyTable) => void
   onLeaderboard: () => void
   onLearn: () => void
+  onGames: (game: ArcadeScreen | 'games') => void
   onRefer: () => void
   onFriends: () => void
   onOffline: (variant: VariantName) => void
@@ -34,7 +38,7 @@ interface Props {
 
 const ONLINE: OnlineMode[] = ['computer', 'quick', 'private']
 
-export function HomeScreen ({ practiceBalance, seatedAt, onRejoin, onGiveUpSeat, onLeaderboard, onLearn, onRefer, onFriends, onOffline, onOnline }: Props) {
+export function HomeScreen ({ practiceBalance, seatedAt, onRejoin, onGiveUpSeat, onLeaderboard, onLearn, onGames, onRefer, onFriends, onOffline, onOnline }: Props) {
   const { t, number } = useI18n()
   return (
     <main className="lobby">
@@ -91,6 +95,26 @@ export function HomeScreen ({ practiceBalance, seatedAt, onRejoin, onGiveUpSeat,
             </button>
           ))}
         </div>
+      </section>
+
+      <section className="tables" aria-labelledby="games-heading">
+        <div className="section-head">
+          <p className="eyebrow" id="games-heading">{t('home.games.eyebrow')}</p>
+          <span className="section-links">
+            <a className="link-button" href={routeForScreen('games').path} onClick={event => { if (!event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0) { event.preventDefault(); onGames('games') } }}>{t('home.games.all')}</a>
+          </span>
+        </div>
+        <ul className="arcade-strip">
+          {ARCADE_SCREENS.map(game => (
+            <li key={game}>
+              <a className="arcade-chip" style={{ ['--art' as string]: `url(${posterOf(game)})` }} href={routeForScreen(game).path} onClick={event => { if (!event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0) { event.preventDefault(); onGames(game) } }}>
+                <GameIcon game={game} />
+                <span>{t(`game.${game}.title` as MessageKey)}</span>
+                <small>{t(`game.${game}.kicker` as MessageKey)}</small>
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="tables" aria-labelledby="offline-heading">

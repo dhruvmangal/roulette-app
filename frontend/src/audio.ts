@@ -44,3 +44,37 @@ export function playChip () {
   const ctx = audio()
   if (ctx) tone(ctx, 1900, ctx.currentTime, 0.06, 0.05, 'triangle')
 }
+
+/** A soft tick: a plinko peg, a wheel slice passing the pointer, a hoofbeat. */
+export function playTick (pitch = 1) {
+  if (!soundsOn()) return
+  const ctx = audio()
+  if (ctx) tone(ctx, 1200 * pitch, ctx.currentTime, 0.03, 0.03, 'triangle')
+}
+
+/** Cashing out of a flight, or a ball landing in a paying slot. */
+export function playCashOut () {
+  if (!soundsOn()) return
+  const ctx = audio()
+  if (!ctx) return
+  const now = ctx.currentTime
+  ;[880, 1174.66, 1567.98].forEach((f, i) => tone(ctx, f, now + i * 0.07, 0.25, 0.07))
+}
+
+/** The rocket or plane lost: a falling sweep. */
+export function playCrash () {
+  if (!soundsOn()) return
+  const ctx = audio()
+  if (!ctx) return
+  const now = ctx.currentTime
+  const oscillator = ctx.createOscillator()
+  const gain = ctx.createGain()
+  oscillator.type = 'sawtooth'
+  oscillator.frequency.setValueAtTime(420, now)
+  oscillator.frequency.exponentialRampToValueAtTime(55, now + 0.5)
+  gain.gain.setValueAtTime(Math.max(0.0001, 0.07 * getPreferences().volume), now)
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55)
+  oscillator.connect(gain).connect(ctx.destination)
+  oscillator.start(now)
+  oscillator.stop(now + 0.6)
+}

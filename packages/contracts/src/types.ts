@@ -1,4 +1,6 @@
-import type { Bet, BetType, BotStyle, Pocket, VariantName } from '@roulette/engine'
+import type { ArcadeRisk, Bet, BetType, BotStyle, CrashBet, CrashGame, HorseBet, Pocket, VariantName } from '@roulette/engine'
+
+export type { CrashBet }
 
 /** Every REST response and socket ack: `data` on success, `errors` otherwise. */
 export interface Envelope<T> {
@@ -83,7 +85,7 @@ export interface WalletTransaction {
   amount: number
   balanceBefore: number
   balanceAfter: number
-  referenceType: 'ROUND' | 'BET' | 'BONUS' | 'ADMIN' | null
+  referenceType: 'ROUND' | 'BET' | 'BONUS' | 'ADMIN' | 'ARCADE' | null
   referenceId: string | null
   createdAt: string
 }
@@ -530,4 +532,50 @@ export interface ServerEventData {
   'room:ended': { roomId: number, summary: SessionSummaryRow[] }
   'chat:message': { roomId: number, message: ChatMessage }
   'room:updated': { roomId: number, room: RoomView }
+}
+
+// ─── Arcade ──────────────────────────────────────────────────────────
+
+interface ArcadeRoundBase {
+  arcadeRoundId: number
+  status: 'ACTIVE' | 'SETTLED'
+  /** Chips staked in all, and chips paid back (0 until it settles). */
+  stake: number
+  payout: number
+  startedAt: string
+  settledAt: string | null
+}
+
+export interface PlinkoRound extends ArcadeRoundBase {
+  game: 'PLINKO'
+  outcome: { rows: number, risk: ArcadeRisk, path: number[], slot: number, multiplier: number }
+}
+
+export interface WheelRound extends ArcadeRoundBase {
+  game: 'WHEEL'
+  outcome: { risk: ArcadeRisk, segment: number, multiplier: number }
+}
+
+export interface HorsesRound extends ArcadeRoundBase {
+  game: 'HORSES'
+  outcome: { bets: HorseBet[], order: number[], seed: number, winner: number, odds: number[] }
+}
+
+export interface CrashRound extends ArcadeRoundBase {
+  game: CrashGame
+  outcome: {
+    /** Told only once the flight is over. */
+    crashPoint?: number
+    bets: CrashBet[]
+  }
+  /** How far into the flight the server says it is; only for a flight in the air. */
+  elapsedMs?: number
+}
+
+export type ArcadeRound = PlinkoRound | WheelRound | HorsesRound | CrashRound
+
+/** A play and the balance after it. */
+export interface ArcadePlay<R extends ArcadeRound = ArcadeRound> {
+  round: R
+  balance: number
 }

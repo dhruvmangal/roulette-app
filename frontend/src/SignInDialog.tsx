@@ -15,7 +15,7 @@ interface Props {
 /** Sign in with Google, or play as a guest and save the account later. */
 export function SignInDialog ({ reason, onDone, onClose }: Props) {
   const { providers, signIn, playAsGuest } = useSession()
-  const { t } = useI18n()
+  const { t, rich } = useI18n()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -51,6 +51,7 @@ export function SignInDialog ({ reason, onDone, onClose }: Props) {
           <button type="button" className="btn-ghost" disabled={busy} onClick={() => attempt(playAsGuest)}>{t('signin.guest')}</button>
           <p className="fine">{t('signin.guestNote')}</p>
         </div>
+        <p className="fine legal-note">{rich('signin.legal', { terms: <a href="/terms" target="_blank" rel="noopener">{t('legal.terms')}</a>, privacy: <a href="/privacy" target="_blank" rel="noopener">{t('legal.privacy')}</a> })}</p>
         {error && <p className="form-error" role="alert">{error}</p>}
       </section>
     </div>
