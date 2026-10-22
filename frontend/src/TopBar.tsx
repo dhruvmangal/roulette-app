@@ -3,7 +3,9 @@ import { useI18n } from './i18n'
 import { useSession } from './session'
 import { useSocial } from './social'
 
-export type Screen = 'home' | 'wallet' | 'bonuses' | 'history' | 'analytics' | 'learn' | 'refer' | 'settings' | 'friends' | 'achievements' | 'leaderboard'
+import { routeForScreen, type Screen } from './routes'
+
+export type { Screen }
 
 interface Props {
   onNavigate: (screen: Screen) => void
@@ -37,13 +39,20 @@ export function TopBar ({ onNavigate, onSignIn, onSaveAccount, balance, practice
   const shown = balance ?? (status === 'signedIn' && chips !== null ? { label: t('nav.chips'), value: chips } : { label: t('nav.practiceChips'), value: practiceBalance })
   const go = (screen: Screen) => { setMenuOpen(false); onNavigate(screen) }
 
+  /** A real link, so it can be crawled and opened in a new tab; a plain click stays in the page. */
+  const link = (screen: Screen) => (event: React.MouseEvent) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+    event.preventDefault()
+    onNavigate(screen)
+  }
+
   return (
     <header className="topbar">
-      <button type="button" className="wordmark" onClick={() => onNavigate('home')} aria-label={t('nav.home')}>
+      <a className="wordmark" href={routeForScreen('home').path} onClick={link('home')} aria-label={t('nav.home')}>
         <img className="mark" src="/favicon.svg" alt="" width="36" height="36" /><span>Roulette</span>
-      </button>
+      </a>
       <span className="badge"><i /> {t('nav.badge')}</span>
-      <button type="button" className="topbar-link" onClick={() => onNavigate('learn')}>{t('nav.learn')}</button>
+      <a className="topbar-link" href={routeForScreen('learn').path} onClick={link('learn')}>{t('nav.learn')}</a>
       <button type="button" className="topbar-icon" onClick={() => onNavigate('settings')} aria-label={t('menu.settings')} title={t('menu.settings')}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.5-2.3.9a7.5 7.5 0 0 0-1.7-1L15 3.5h-4l-.4 2.4a7.5 7.5 0 0 0-1.7 1l-2.3-.9-2 3.5 2 1.5a7.6 7.6 0 0 0 0 2l-2 1.5 2 3.5 2.3-.9a7.5 7.5 0 0 0 1.7 1l.4 2.4h4l.4-2.4a7.5 7.5 0 0 0 1.7-1l2.3.9 2-3.5-2-1.5ZM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z" transform="translate(-1 0)" /></svg>
       </button>

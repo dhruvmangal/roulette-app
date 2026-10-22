@@ -21,6 +21,9 @@ FROM base AS build
 # set it when the backend has its own domain, e.g. https://api.example.com.
 ARG VITE_API_ORIGIN=""
 ENV VITE_API_ORIGIN=$VITE_API_ORIGIN
+# The public address of the site (https://example.com), for canonical links, sitemap.xml and robots.txt.
+ARG VITE_SITE_URL=""
+ENV VITE_SITE_URL=$VITE_SITE_URL
 RUN npm run build --workspace=@roulette/frontend
 
 FROM nginx:1.27.5-alpine AS production

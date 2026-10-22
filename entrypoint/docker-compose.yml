@@ -22,6 +22,8 @@ services:
       context: ..
       dockerfile: frontend/Dockerfile
       target: production
+      args:
+        VITE_SITE_URL: ${SITE_URL:-}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]

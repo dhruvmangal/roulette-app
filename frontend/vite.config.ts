@@ -2,6 +2,7 @@ import { existsSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
+import { seoPages } from './scripts/seoPlugin'
 
 const CANDIDATES_DIR = fileURLToPath(new URL('./assets-src/candidates', import.meta.url))
 
@@ -25,7 +26,7 @@ function dealerCandidates (): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), dealerCandidates()],
+  plugins: [react(), dealerCandidates(), seoPages()],
   // Use the packages' TypeScript source directly so dev and lint need no prebuilt dist.
   resolve: {
     alias: {

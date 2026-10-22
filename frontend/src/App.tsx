@@ -18,6 +18,8 @@ import { LeaderboardScreen } from './LeaderboardScreen'
 import { OnlineDialog, type OnlineChoice, type OnlineMode } from './OnlineDialog'
 import { SaveAccountDialog, SignInDialog } from './SignInDialog'
 import { TopBar, type Screen } from './TopBar'
+import { routeForPath, routeForScreen } from './routes'
+import { applyRouteMeta } from './seo'
 import { SessionProvider, errorMessage, useSession } from './session'
 import { SocialProvider, useSocial } from './social'
 import { AchievementsScreen } from './AchievementsScreen'
@@ -94,7 +96,7 @@ function Roulette () {
   const session = useSession()
   const { t } = useI18n()
   const social = useSocial()
-  const [screen, setScreen] = useState<Screen>('home')
+  const [screen, setScreen] = useState<Screen>(() => routeForPath(window.location.pathname)?.screen ?? 'home')
   const [table, setTable] = useState<OpenTable | null>(null)
   const [practice] = useState(() => new LocalWalletAdapter({ storage: deviceStorage(), startingBalance: STARTING_BALANCE }))
   const [practiceBalance, setPracticeBalance] = useState(() => practice.getBalance() ?? STARTING_BALANCE)
@@ -119,6 +121,24 @@ function Roulette () {
   const [networkOnline, setNetworkOnline] = useState(true)
 
   useEffect(() => { void startNative() }, [])
+
+  // The address follows the screen (so every page has a link of its own and the
+  // browser's back button works), and the screen follows the address.
+  // Redirects (an unknown address, a sign-in-only page opened while signed out) replace the entry instead of adding one, so back never lands on them.
+  const replaceUrl = useRef(true)
+  useEffect(() => {
+    const route = routeForScreen(screen)
+    if (routeForPath(window.location.pathname) !== route) {
+      window.history[replaceUrl.current ? 'replaceState' : 'pushState'](null, '', route.path + window.location.search)
+    }
+    replaceUrl.current = false
+    applyRouteMeta(route)
+  }, [screen])
+  useEffect(() => {
+    const onPop = () => setScreen(routeForPath(window.location.pathname)?.screen ?? 'home')
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
   useEffect(() => watchNetwork(setNetworkOnline), [])
 
   useEffect(() => practice.subscribe(balance => setPracticeBalance(balance ?? STARTING_BALANCE)), [practice])
@@ -136,8 +156,12 @@ function Roulette () {
       if (current?.online) current.transport.leave()
       return current?.online ? null : current
     })
-    setScreen(current => current === 'home' || current === 'learn' || current === 'settings' ? current : 'home')
-  }, [session.status])
+    setScreen(current => {
+      if (current === 'home' || current === 'learn' || current === 'settings') return current
+      replaceUrl.current = true
+      return 'home'
+    })
+  }, [session.status, screen])
 
   // Back on the home screen: are there tables still holding a seat for this player?
   const { api, status } = session
