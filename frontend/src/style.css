@@ -923,9 +923,10 @@ button:disabled { cursor: not-allowed; }
 html:lang(hi) *, html:lang(hi) *::before, html:lang(hi) *::after { letter-spacing: normal !important; }
 
 /* ── Legal pages ─────────────────────────────────────────────────── */
-.footer-links { display: flex; gap: 18px; }
-.footer-links a { color: inherit; text-decoration: none; }
-.footer-links a:hover { color: var(--gold); }
+.footer-links { display: flex; align-items: center; gap: 14px; }
+.footer-links a { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--gold); text-decoration: underline; text-underline-offset: 4px; }
+.footer-links a + a::before { content: '·'; margin-right: 14px; color: var(--faint); }
 .legal { max-width: 780px; }
 .legal .lede { max-width: none; margin: 0 0 28px; }
 .legal-updated { margin: 10px 0 0; color: var(--faint); font-size: 13px; }
