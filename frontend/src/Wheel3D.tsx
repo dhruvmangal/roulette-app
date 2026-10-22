@@ -32,6 +32,8 @@ interface Props {
 
 // Geometry, in rotor radii. Pocket angles are measured counter-clockwise seen from above,
 // and wheel order runs clockwise, so pocket i of wheelOrder sits at local angle -i * slice.
+/** The shortest gap between drawn frames while the wheel only idles (about 30 a second). */
+const IDLE_FRAME_MS = 30
 const NUMBER_IN = 0.8
 const POCKET_IN = 0.6
 const POCKET_R = 0.7
@@ -293,7 +295,7 @@ export function Wheel3D ({ variant, spin, onSettled, restingPocket, compact, vie
   useEffect(() => {
     const mount = mountRef.current!
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.toneMapping = THREE.NeutralToneMapping
     renderer.toneMappingExposure = 0.95
     renderer.shadowMap.enabled = true
@@ -313,7 +315,7 @@ export function Wheel3D ({ variant, spin, onSettled, restingPocket, compact, vie
     const key = new THREE.SpotLight('#fff1d6', 30, 12, Math.PI / 5, 0.55, 1.4)
     key.position.set(0.8, 4.2, 1.6)
     key.castShadow = true
-    key.shadow.mapSize.set(2048, 2048)
+    key.shadow.mapSize.set(1024, 1024)
     key.shadow.bias = -0.0004
     key.shadow.radius = 4
     const rim = new THREE.DirectionalLight('#9fb4ff', 0.6)
@@ -483,6 +485,10 @@ export function Wheel3D ({ variant, spin, onSettled, restingPocket, compact, vie
       if (untouched) resetView()
     })
     observer.observe(mount)
+    // Nothing is drawn while the wheel is scrolled out of view or covered.
+    let onScreen = true
+    const visibility = new IntersectionObserver(([entry]) => { onScreen = entry.isIntersecting })
+    visibility.observe(mount)
 
     let theta = 0
     let spinState: SpinState | null = null
@@ -522,7 +528,12 @@ export function Wheel3D ({ variant, spin, onSettled, restingPocket, compact, vie
     apiRef.current = { startSpin, resetView, setView, setDealer, announce }
     if (pendingSpinRef.current) startSpin(pendingSpinRef.current)
 
+    let lastDrawn = 0
     renderer.setAnimationLoop(now => {
+      if (!onScreen) { last = now; return }
+      // A wheel turning on its own needs no more than 30 frames a second; a spin gets them all.
+      if (!spinState && now - lastDrawn < IDLE_FRAME_MS) return
+      lastDrawn = now
       // A long gap means the tab was hidden; the spin catches up in one frame, so skip its clicks.
       const caughtUp = now - last > 150
       const dt = Math.min(0.05, (now - last) / 1000)
@@ -628,6 +639,7 @@ export function Wheel3D ({ variant, spin, onSettled, restingPocket, compact, vie
       rig?.dispose()
       stageDisposables.forEach(item => item.dispose())
       observer.disconnect()
+      visibility.disconnect()
       renderer.setAnimationLoop(null)
       controls.dispose()
       controlsRef.current = null

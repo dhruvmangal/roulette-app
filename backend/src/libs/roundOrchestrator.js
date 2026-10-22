@@ -98,12 +98,13 @@ class RoundOrchestrator {
       for (const roomId of this.#rooms.keys()) {
         if (!await this.#renew(roomId)) this.#forget(roomId)
       }
+      // Two index-backed lookups instead of one scan of every room ever played.
       const rooms = await sequelize.query(`
         SELECT r.room_id AS "roomId" FROM rooms r
-        WHERE (r.status = 'OPEN' AND EXISTS (
-                SELECT 1 FROM room_players rp WHERE rp.room_id = r.room_id AND rp.left_at IS NULL AND NOT rp.is_bot))
-           OR EXISTS (
-                SELECT 1 FROM rounds rd WHERE rd.room_id = r.room_id AND rd.status IN ('BETTING', 'BETS_CLOSED', 'SPINNING'))
+        WHERE r.status = 'OPEN' AND EXISTS (
+          SELECT 1 FROM room_players rp WHERE rp.room_id = r.room_id AND rp.left_at IS NULL AND NOT rp.is_bot)
+        UNION
+        SELECT rd.room_id FROM rounds rd WHERE rd.status IN ('BETTING', 'BETS_CLOSED', 'SPINNING')
       `, { type: QueryTypes.SELECT })
       const now = Date.now()
       const due = rooms.filter(({ roomId }) => !(now - (this.#idleSince.get(roomId) ?? -Infinity) < IDLE_RECHECK_MS))

@@ -40,7 +40,7 @@ export interface StageOptions {
  */
 export function createStage (container: HTMLElement, { fov = 40, bloom = 0.45, exposure = 1, reflections = 0.6 }: StageOptions = {}): Stage {
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
   renderer.toneMapping = THREE.NeutralToneMapping
   renderer.toneMappingExposure = exposure
   renderer.domElement.className = 'arcade-gl'
@@ -71,7 +71,7 @@ export function createStage (container: HTMLElement, { fov = 40, bloom = 0.45, e
     composer.setSize(width, height)
     camera.aspect = width / height
     camera.updateProjectionMatrix()
-    state.pixelScale = height / (2 * Math.tan(THREE.MathUtils.degToRad(fov) / 2)) * Math.min(window.devicePixelRatio, 2)
+    state.pixelScale = height / (2 * Math.tan(THREE.MathUtils.degToRad(fov) / 2)) * Math.min(window.devicePixelRatio, 1.5)
   }
   const observer = new ResizeObserver(resize)
   observer.observe(container)

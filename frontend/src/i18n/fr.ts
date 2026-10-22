@@ -258,6 +258,7 @@ export const fr: Messages = {
   'home.titleA': 'La roue',
   'home.titleB': 'vous attend.',
   'home.lede': 'Roulette américaine et européenne sur une vraie roue en 3D. Jouez en ligne avec des amis et des inconnus, ou entraînez-vous hors ligne. Jouez pour le frisson, jamais pour l’argent.',
+  'home.lede.single': 'Roulette américaine et européenne sur une vraie roue 3D, contre l’ordinateur. Jouez pour le frisson, jamais pour l’argent.',
   'home.playOnline': 'Jouer en ligne',
   'home.practise': 'S’entraîner hors ligne',
   'home.link.friends': 'Amis →',

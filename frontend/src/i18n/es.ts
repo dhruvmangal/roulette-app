@@ -258,6 +258,7 @@ export const es: Messages = {
   'home.titleA': 'La ruleta',
   'home.titleB': 'te espera.',
   'home.lede': 'Ruleta americana y europea en una ruleta 3D real. Juega en línea con amigos y desconocidos, o practica sin conexión. Juega por la emoción, nunca por dinero.',
+  'home.lede.single': 'Ruleta americana y europea en una ruleta 3D real, contra la computadora. Juega por la emoción, nunca por dinero.',
   'home.playOnline': 'Jugar en línea',
   'home.practise': 'Practicar sin conexión',
   'home.link.friends': 'Amigos →',
