@@ -24,6 +24,7 @@ function Privacy () {
           <li><b>Gameplay.</b> Your chip balance and every chip movement, your bets, rounds, results, achievements, leaderboard position, referrals, friends, and the tables you join.</li>
           <li><b>Chat.</b> Messages and reactions you send at online tables, and any reports you file about messages.</li>
           <li><b>Device and visit details.</b> When you open the game we record your IP address, a rough location worked out from it (rounded to about a kilometre), your browser or app, operating system, device model, language, screen orientation and connection type. We do not ask for your precise location, contacts, photos, microphone, camera or Wi-Fi name.</li>
+          <li><b>Usage statistics.</b> We use Google Analytics to count visits and see which pages and games are used. It records the pages you open, your approximate location, and your browser and device type, using cookies or similar identifiers. We do not send it your name, email or chip balance, and we have turned off advertising features. You can opt out with <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google’s opt-out add-on</a> or by blocking analytics cookies in your browser.</li>
           <li><b>Notifications.</b> If you turn on push notifications, the token your phone gives us so we can send them.</li>
           <li><b>On your device.</b> Settings such as language and sound, and practice chips for offline play, are kept in your browser or app storage. Offline play never leaves your device.</li>
         </ul>
@@ -33,7 +34,7 @@ function Privacy () {
         <ul>
           <li>To run the game: sign you in, keep your chips, deal rounds, show your history and let you play with friends.</li>
           <li>To keep it fair and safe: spot duplicate or abusive accounts, stop cheating and bonus abuse, moderate chat and respond to reports.</li>
-          <li>To improve it: understand which games are used and fix problems.</li>
+          <li>To improve it: understand which pages and games are used (through Google Analytics) and fix problems.</li>
           <li>To contact you about the game, only through notifications you have chosen to allow.</li>
         </ul>
         <p>We do not sell your data and we do not show third-party advertising.</p>
@@ -41,7 +42,7 @@ function Privacy () {
 
       <Section title="Who sees it">
         <p>Other players see your username, your chat messages, and your results on tables and leaderboards. Friends you add can see whether you are online and which table you are at. Nobody else sees your email address.</p>
-        <p>We use a few service providers to operate the game: hosting and database providers, Google and Apple for sign-in, and Firebase Cloud Messaging and Apple’s push service to deliver notifications. They process data only to provide those services. We may also share information if the law requires it or to protect the game and its players.</p>
+        <p>We use a few service providers to operate the game: hosting and database providers, Google and Apple for sign-in, Google Analytics for usage statistics, and Firebase Cloud Messaging and Apple’s push service to deliver notifications. They process data only to provide those services. We may also share information if the law requires it or to protect the game and its players.</p>
       </Section>
 
       <Section title="How long we keep it">

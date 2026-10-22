@@ -22,6 +22,7 @@ import { ArcadeScreen } from './ArcadeScreen'
 import { LegalScreen } from './LegalScreen'
 import { ARCADE_SCREENS, isPublicScreen, routeForPath, routeForScreen } from './routes'
 import { applyRouteMeta } from './seo'
+import { trackPage } from './analytics'
 import { SessionProvider, errorMessage, useSession } from './session'
 import { SocialProvider, useSocial } from './social'
 import { AchievementsScreen } from './AchievementsScreen'
@@ -135,6 +136,7 @@ function Roulette () {
     }
     replaceUrl.current = false
     applyRouteMeta(route)
+    trackPage(route.path, route.title)
   }, [screen])
   useEffect(() => {
     const onPop = () => setScreen(routeForPath(window.location.pathname)?.screen ?? 'home')
